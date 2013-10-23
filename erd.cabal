@@ -17,8 +17,9 @@ cabal-version:       >=1.8
 
 executable erd
   main-is: Main.hs
-  ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  -- ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
   build-depends:
     base == 4.6.*
     , graphviz == 2999.16.*
     , text == 0.11.*
+    , parsec == 3.1.*
