@@ -65,24 +65,29 @@ document = fmap catMaybes $ manyTill top eof
         blanks = many1 (space <?> "whitespace") >> return Nothing
 
 entity :: Parser (Maybe AST)
-entity = do char '['
-            n <- ident
-            char ']'
+entity = do n <- between (char '[') (char ']') ident
+            spacesNoNew
+            opts <- options
             eolComment
-            return $ Just $ E Entity { name = n, attrs = [] }
+            return $ Just $ E Entity { name = n, attrs = [], eoptions = opts }
 
 attr :: Parser (Maybe AST)
 attr = do
-  keys <- many (oneOf "*+" <|> do { spacesNoNew1; return ' ' })
+  keys <- many $ oneOf "*+ \t"
   let (ispk, isfk) = ('*' `elem` keys, '+' `elem` keys)
   spacesNoNew
   n <- ident
-  opts <- option [] $ try
-            $ between (char '{' >> emptiness) (emptiness >> char '}')
-            $ opt `sepEndBy` (emptiness >> char ',' >> emptiness)
+  opts <- options
   return
     $ Just
-    $ A Attribute { field = strip n, pk = ispk, fk = isfk, options = opts }
+    $ A Attribute { field = strip n, pk = ispk, fk = isfk, aoptions = opts }
+
+options :: Parser [Option]
+options =
+  option []
+    $ try
+    $ between (char '{' >> emptiness) (emptiness >> char '}')
+    $ opt `sepEndBy` (emptiness >> char ',' >> emptiness)
 
 opt :: Parser Option
 opt = do
@@ -108,16 +113,13 @@ ident :: Parser Text
 ident = fmap pack (many1 (alphaNum <|> char ' ' <|> char '\t'))
 
 emptiness :: Parser ()
-emptiness = void $ many (void (many1 space) <|> eolComment)
+emptiness = skipMany (void (many1 space) <|> eolComment)
 
 eolComment :: Parser ()
-eolComment = try spacesEol <|> try (void comment)
+eolComment = spacesNoNew >> (eol <|> void comment)
 
 spacesNoNew :: Parser ()
 spacesNoNew = skipMany $ satisfy $ \c -> c /= '\n' && c /= '\r' && isSpace c
-
-spacesNoNew1 :: Parser ()
-spacesNoNew1 = skipMany1 $ satisfy $ \c -> c /= '\n' && c /= '\r' && isSpace c
 
 spacesEol :: Parser ()
 spacesEol = spacesNoNew >> eol

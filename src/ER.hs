@@ -15,7 +15,10 @@ import Data.Text.Lazy
 data ER = ER { entities :: [Entity], rels :: [Relation] }
           deriving Show
 
-data Entity = Entity { name :: Text, attrs :: [Attribute] }
+data Entity = Entity { name :: Text
+                     , attrs :: [Attribute]
+                     , eoptions :: [Option]
+                     }
               deriving Show
 
 instance Eq Entity where
@@ -27,7 +30,7 @@ instance Ord Entity where
 data Attribute = Attribute { field :: Text
                            , pk :: Bool
                            , fk :: Bool
-                           , options :: [Option]
+                           , aoptions :: [Option]
                            }
                  deriving Show
 
