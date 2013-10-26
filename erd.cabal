@@ -16,6 +16,7 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 executable erd
+  hs-source-dirs: src
   main-is: Main.hs
   -- ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
   build-depends:

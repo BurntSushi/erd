@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Parser
+module Parse
   ( loadER
   )
 where

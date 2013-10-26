@@ -15,7 +15,7 @@ import qualified Data.GraphViz.Types.Generalised as G
 import Data.GraphViz.Types.Monadic
 
 import Config
-import ParseER
+import Parse
 
 data ERLabel = ERText L.Text
                | ERRecord L.Text L.Text
