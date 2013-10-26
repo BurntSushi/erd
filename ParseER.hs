@@ -4,10 +4,10 @@ module ParseER
   )
 where
 
-import Control.Monad (when, void)
+import Control.Monad (liftM2, when, void)
 import Data.Char (isSpace)
 import Data.Maybe
-import Data.Text.Lazy
+import Data.Text.Lazy hiding (map, reverse)
 import Data.Text.Lazy.IO
 import System.IO (Handle)
 import Text.Parsec
@@ -29,24 +29,31 @@ loadER fpath f = do
     Right err@(Left _) -> return err
     Right (Right er) -> return $ Right er
 
+-- | Converts a list of syntactic categories in an entity-relationship
+-- description to an ER representation. If there was a problem with the
+-- conversion, an error is reported.
+--
+-- This preserves the ordering of the syntactic elements in the original
+-- description.
 toER :: [AST] -> Either String ER
-toER = toER' Nothing
-  where toER' :: Maybe Entity -> [AST] -> Either String ER
-        toER' _ [] = Right $ ER [] []
-        toER' Nothing (A a:_) =
+toER = toER' (ER [] [])
+  where toER' :: ER -> [AST] -> Either String ER
+        toER' er [] = Right $ reversed er
+        toER' (ER { entities = [] }) (A a:_) =
           let name = show (field a)
            in Left $ printf "Attribute '%s' comes before first entity." name
-        toER' (Just e) (A a:xs) = do
-          er <- toER' (Just e) xs
-          let (h:t) = entities er
-          let h' = h { attrs = a:attrs h }
-          return $ er { entities = h':t }
-        toER' _ (E e:xs) = do
-          er <- toER' (Just e) xs
-          return $ er { entities = e:entities er }
-        toER' e (R r:xs) = do
-          er <- toER' e xs
-          return $ er { rels = r:rels er }
+        toER' er@(ER { entities = e:es }) (A a:xs) = do
+          let e' = e { attrs = a:attrs e }
+          toER' (er { entities = e':es }) xs
+        toER' er@(ER { entities = es }) (E e:xs) =
+          toER' (er { entities = e:es}) xs
+        toER' er@(ER { rels = rs }) (R r:xs) =
+          toER' (er { rels = r:rs }) xs
+
+        reversed :: ER -> ER
+        reversed (ER { entities = es, rels = rs }) =
+          let es' = map (\e -> e { attrs = reverse (attrs e) }) es
+          in  ER { entities = reverse es', rels = reverse rs }
 
 document :: Parser [AST]
 document = fmap catMaybes $ manyTill top eof
@@ -70,8 +77,23 @@ attr = do
   let (ispk, isfk) = ('*' `elem` keys, '+' `elem` keys)
   spacesNoNew
   n <- ident
-  eolComment
-  return $ Just $ A Attribute { field = n, pk = ispk, fk = isfk, elabel = "" }
+  opts <- option [] $ try
+            $ between (char '{' >> emptiness) (emptiness >> char '}')
+            $ opt `sepEndBy` (emptiness >> char ',' >> emptiness)
+  return
+    $ Just
+    $ A Attribute { field = strip n, pk = ispk, fk = isfk, options = opts }
+
+opt :: Parser Option
+opt = do
+  name <- liftM2 (:) letter (manyTill letter (char ':'))
+          <?> "option name"
+  emptiness
+  value <- between (char '"') (char '"') (many $ noneOf "\"")
+           <?> "option value"
+  case optionByName name value of
+    Just o' -> emptiness >> return o'
+    Nothing -> unexpected (printf "Option '%s' does not exist." name)
 
 rel :: Parser (Maybe AST)
 rel = parserZero
@@ -83,7 +105,10 @@ comment = do
   return Nothing
 
 ident :: Parser Text
-ident = fmap pack $ many1 alphaNum
+ident = fmap pack (many1 (alphaNum <|> char ' ' <|> char '\t'))
+
+emptiness :: Parser ()
+emptiness = void $ many (void (many1 space) <|> eolComment)
 
 eolComment :: Parser ()
 eolComment = try spacesEol <|> try (void comment)

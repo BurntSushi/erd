@@ -2,9 +2,11 @@ module ER
   ( ER(..)
   , Entity(..)
   , Attribute(..)
+  , Option(..)
   , Relation(..)
   , Rel(..)
   , RelType(..)
+  , optionByName
   )
 where
 
@@ -25,7 +27,7 @@ instance Ord Entity where
 data Attribute = Attribute { field :: Text
                            , pk :: Bool
                            , fk :: Bool
-                           , elabel :: Text
+                           , options :: [Option]
                            }
                  deriving Show
 
@@ -34,6 +36,17 @@ instance Eq Attribute where
 
 instance Ord Attribute where
   a1 `compare` a2 = (toLower . field) a1 `compare` (toLower . field) a2
+
+data Option = Label String
+            | Color String
+            | BgColor String
+            deriving Show
+
+optionByName :: String -> String -> Maybe Option
+optionByName "label" = Just . Label
+optionByName "color" = Just . Color
+optionByName "bgcolor" = Just . BgColor
+optionByName _ = const Nothing
 
 data Relation = Relation { rel1 :: Rel
                          , rel2 :: Rel
