@@ -6,8 +6,9 @@ where
 
 import Control.Monad (liftM2, when, void)
 import Data.Char (isSpace)
+import Data.List (find)
 import Data.Maybe
-import Data.Text.Lazy hiding (map, reverse)
+import Data.Text.Lazy hiding (find, map, reverse)
 import Data.Text.Lazy.IO
 import System.IO (Handle)
 import Text.Parsec
@@ -31,14 +32,15 @@ loadER fpath f = do
 
 -- | Converts a list of syntactic categories in an entity-relationship
 -- description to an ER representation. If there was a problem with the
--- conversion, an error is reported.
+-- conversion, an error is reported. This includes checking that each
+-- relationship contains only valid entity names.
 --
 -- This preserves the ordering of the syntactic elements in the original
 -- description.
 toER :: [AST] -> Either String ER
 toER = toER' (ER [] [])
   where toER' :: ER -> [AST] -> Either String ER
-        toER' er [] = Right $ reversed er
+        toER' er [] = Right (reversed er) >>= validRels
         toER' (ER { entities = [] }) (A a:_) =
           let name = show (field a)
            in Left $ printf "Attribute '%s' comes before first entity." name
@@ -55,12 +57,28 @@ toER = toER' (ER [] [])
           let es' = map (\e -> e { attrs = reverse (attrs e) }) es
           in  ER { entities = reverse es', rels = reverse rs }
 
+        validRels :: ER -> Either String ER
+        validRels er = validRels' (rels er) er
+
+        validRels' :: [Relation] -> ER -> Either String ER
+        validRels' [] er = return er
+        validRels' (r:rs) er = do
+          let r1 = find (\e -> name e == rname (rel1 r)) (entities er)
+          let r2 = find (\e -> name e == rname (rel2 r)) (entities er)
+          let err getter = Left
+                             $ printf "Unknown entity '%s' in relationship."
+                             $ unpack $ rname $ getter r
+          when (isNothing r1) (err rel1)
+          when (isNothing r2) (err rel2)
+          return er
+          
+
 document :: Parser [AST]
 document = fmap catMaybes $ manyTill top eof
-  where top = (try entity <?> "entity declaration")
+  where top = (entity <?> "entity declaration")
+              <|> (try rel <?> "relationship") -- must come before attr
               <|> (try attr <?> "attribute")
-              <|> (try rel <?> "relationship")
-              <|> (try comment <?> "comment")
+              <|> (comment <?> "comment")
               <|> blanks
         blanks = many1 (space <?> "whitespace") >> return Nothing
 
@@ -75,12 +93,12 @@ attr :: Parser (Maybe AST)
 attr = do
   keys <- many $ oneOf "*+ \t"
   let (ispk, isfk) = ('*' `elem` keys, '+' `elem` keys)
-  spacesNoNew
   n <- ident
   opts <- options
+  eolComment
   return
     $ Just
-    $ A Attribute { field = strip n, pk = ispk, fk = isfk, aoptions = opts }
+    $ A Attribute { field = n, pk = ispk, fk = isfk, aoptions = opts }
 
 options :: Parser [Option]
 options =
@@ -101,7 +119,26 @@ opt = do
     Nothing -> unexpected (printf "Option '%s' does not exist." name)
 
 rel :: Parser (Maybe AST)
-rel = parserZero
+rel = do
+  let ops = "?1*+"
+  e1 <- ident
+  op1 <- oneOf ops
+  string "--"
+  op2 <- oneOf ops
+  e2 <- ident
+  opts <- options
+
+  t1 <-
+    case relTypeByName op1 of
+      Just t1 -> return t1
+      Nothing -> unexpected (printf "Relation type '%s' does not exist." op1)
+  t2 <-
+    case relTypeByName op2 of
+      Just t2 -> return t2
+      Nothing -> unexpected (printf "Relation type '%s' does not exist." op2)
+  let r1 = Rel { rname = e1, rtype = t1 }
+  let r2 = Rel { rname = e2, rtype = t2 }
+  return $ Just $ R Relation { rel1 = r1, rel2 = r2, roptions = opts }
 
 comment :: Parser (Maybe AST)
 comment = do
@@ -110,7 +147,11 @@ comment = do
   return Nothing
 
 ident :: Parser Text
-ident = fmap pack (many1 (alphaNum <|> char ' ' <|> char '\t'))
+ident = do
+  spacesNoNew
+  n <- fmap pack (many1 alphaNum)
+  spacesNoNew
+  return n
 
 emptiness :: Parser ()
 emptiness = skipMany (void (many1 space) <|> eolComment)

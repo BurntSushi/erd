@@ -7,6 +7,7 @@ module ER
   , Rel(..)
   , RelType(..)
   , optionByName
+  , relTypeByName
   )
 where
 
@@ -22,10 +23,10 @@ data Entity = Entity { name :: Text
               deriving Show
 
 instance Eq Entity where
-  e1 == e2 = (toLower . name) e1 == (toLower . name) e2
+  e1 == e2 = name e1 == name e2
 
 instance Ord Entity where
-  e1 `compare` e2 = (toLower . name) e1 `compare` (toLower . name) e2
+  e1 `compare` e2 = name e1 `compare` name e2
 
 data Attribute = Attribute { field :: Text
                            , pk :: Bool
@@ -35,10 +36,10 @@ data Attribute = Attribute { field :: Text
                  deriving Show
 
 instance Eq Attribute where
-  a1 == a2 = (toLower . field) a1 == (toLower . field) a2
+  a1 == a2 = field a1 == field a2
 
 instance Ord Attribute where
-  a1 `compare` a2 = (toLower . field) a1 `compare` (toLower . field) a2
+  a1 `compare` a2 = field a1 `compare` field a2
 
 data Option = Label String
             | Color String
@@ -53,17 +54,23 @@ optionByName _ = const Nothing
 
 data Relation = Relation { rel1 :: Rel
                          , rel2 :: Rel
-                         , rlabel :: Text
+                         , roptions :: [Option]
                          }
                 deriving Show
 
 data Rel = Rel { rname :: Text, rtype :: RelType }
            deriving Show
 
-data RelType = None
-             | ZeroOne
+data RelType = ZeroOne
              | One
              | ZeroPlus
              | OnePlus
              deriving Show
+
+relTypeByName :: Char -> Maybe RelType
+relTypeByName '?' = Just ZeroOne
+relTypeByName '1' = Just One
+relTypeByName '*' = Just ZeroPlus
+relTypeByName '+' = Just OnePlus
+relTypeByName _ = Nothing
 
