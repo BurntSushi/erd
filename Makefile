@@ -11,7 +11,7 @@ clean:
 
 docs:
 	cabal haddock --hyperlink-source --executables
-	rscp ./dist/doc/html/erd Geils:~/www/burntsushi.net/public_html/docs/haddock/
+	rscp ./dist/doc/html/erd/erd Geils:~/www/burntsushi.net/public_html/docs/haddock/
 
 push:
 	git push origin master
