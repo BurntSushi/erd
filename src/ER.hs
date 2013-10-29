@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module ER
   ( ER(..)
   , Entity(..)
@@ -12,6 +13,10 @@ module ER
 where
 
 import Data.Text.Lazy
+import Text.Printf (printf)
+
+import Data.GraphViz.Parsing (Parse, parse, runParser)
+import Data.GraphViz.Attributes.Colors (Color)
 
 data ER = ER { entities :: [Entity], rels :: [Relation] }
           deriving Show
@@ -42,15 +47,22 @@ instance Ord Attribute where
   a1 `compare` a2 = field a1 `compare` field a2
 
 data Option = Label String
-            | Color String
+            | Color Color
             | BgColor String
             deriving Show
 
-optionByName :: String -> String -> Maybe Option
-optionByName "label" = Just . Label
-optionByName "color" = Just . Color
-optionByName "bgcolor" = Just . BgColor
-optionByName _ = const Nothing
+optionByName :: String -> String -> Either String Option
+optionByName "label" = Right . Label
+optionByName "color" = optionColor
+optionByName "bgcolor" = optionColor
+optionByName unk = const (Left $ printf "Option '%s' does not exist." unk)
+
+optionColor :: String -> Either String Option
+optionColor cstr =
+  case fst $ runParser (parse :: Parse Color) quoted of
+    Left err -> Left (printf "%s (bad color '%s')" err cstr)
+    Right clr -> Right (Color clr)
+  where quoted = "\"" `append` pack cstr `append` "\""
 
 data Relation = Relation { rel1 :: Rel
                          , rel2 :: Rel

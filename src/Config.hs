@@ -13,15 +13,15 @@ import System.IO (Handle, IOMode(..), stdin, stdout, stderr, openFile)
 import Text.Printf (HPrintfType, hPrintf)
 
 data Config =
-  Config { cin :: Handle
-         , cout :: Handle
+  Config { cin :: (String, Handle)
+         , cout :: (String, Handle)
          , cquiet :: Bool
          }
 
 defaultConfig :: Config
 defaultConfig =
-  Config { cin = stdin
-         , cout = stdout
+  Config { cin = ("<stdin>", stdin)
+         , cout = ("<stdout>", stdout)
          , cquiet = False
          }
 
@@ -44,7 +44,7 @@ opts =
       (O.ReqArg (\fpath cIO -> do
                    c <- cIO
                    i <- openFile fpath ReadMode
-                   return $ c { cin = i }
+                   return $ c { cin = (fpath, i) }
                 )
                 "FILE")
       ("When set, input will be read from the given file.\n"
@@ -53,7 +53,7 @@ opts =
       (O.ReqArg (\fpath cIO -> do
                     c <- cIO
                     o <- openFile fpath WriteMode
-                    return $ c { cout = o }
+                    return $ c { cout = (fpath, o) }
                 )
                 "FILE")
       ("When set, output will be written to the given file.\n"

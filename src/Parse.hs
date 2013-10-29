@@ -100,24 +100,6 @@ attr = do
     $ Just
     $ A Attribute { field = n, pk = ispk, fk = isfk, aoptions = opts }
 
-options :: Parser [Option]
-options =
-  option []
-    $ try
-    $ between (char '{' >> emptiness) (emptiness >> char '}')
-    $ opt `sepEndBy` (emptiness >> char ',' >> emptiness)
-
-opt :: Parser Option
-opt = do
-  name <- liftM2 (:) letter (manyTill letter (char ':'))
-          <?> "option name"
-  emptiness
-  value <- between (char '"') (char '"') (many $ noneOf "\"")
-           <?> "option value"
-  case optionByName name value of
-    Just o' -> emptiness >> return o'
-    Nothing -> unexpected (printf "Option '%s' does not exist." name)
-
 rel :: Parser (Maybe AST)
 rel = do
   let ops = "?1*+"
@@ -139,6 +121,24 @@ rel = do
   let r1 = Rel { rname = e1, rtype = t1 }
   let r2 = Rel { rname = e2, rtype = t2 }
   return $ Just $ R Relation { rel1 = r1, rel2 = r2, roptions = opts }
+
+options :: Parser [Option]
+options =
+  option []
+    $ try
+    $ between (char '{' >> emptiness) (emptiness >> char '}')
+    $ opt `sepEndBy` (emptiness >> char ',' >> emptiness)
+
+opt :: Parser Option
+opt = do
+  name <- liftM2 (:) letter (manyTill letter (char ':'))
+          <?> "option name"
+  emptiness
+  value <- between (char '"') (char '"') (many $ noneOf "\"")
+           <?> "option value"
+  case optionByName name value of
+    Left err -> fail err
+    Right o' -> emptiness >> return o'
 
 comment :: Parser (Maybe AST)
 comment = do
