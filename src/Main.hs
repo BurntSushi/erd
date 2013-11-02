@@ -6,6 +6,7 @@ import Data.String
 import qualified Data.Text.Lazy as L
 import System.Exit (exitFailure)
 import System.IO (hClose, hPutStrLn, stderr)
+import Text.Printf (printf)
 
 import Data.GraphViz.Attributes
 import Data.GraphViz.Attributes.Complete
@@ -42,12 +43,15 @@ eg = digraph' $ do
 
   NPort "test" "l1" --> NPort "test2" "b"
 
-dotER :: ER -> G.DotGraph PortNode
+dotER :: ER -> G.DotGraph L.Text
 dotER er = digraph' $ do
   graphAttrs [RankDir FromLeft]
   nodeAttrs [shape Record]
   forM_ (entities er) $ \e ->
-    node (NText $ name e) []
+    node (name e) [textLabel (L.intercalate " | " $ ports e)]
+  where ports e = (port . L.unpack . name) e : dotAttrs (attrs e)
+        dotAttrs = map (port . L.unpack . field)
+        port s = L.pack $ printf "<%s> %s" s s
 
 main :: IO ()
 main = do
