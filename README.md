@@ -227,14 +227,12 @@ title {label: "nfldb Entity-Relationship diagram (condensed)", size: "20"}
   down {label: "smallint, null"}
   yards_to_go {label: "smallint, null"}
 
-
 [play_player] {bgcolor: "#ececfc"}
   *+gsis_id {label: "gameid, not null"}
   *+drive_id {label: "usmallint, not null"}
   *+play_id {label: "usmallint, not null"}
   *+player_id {label: "varchar, not null"}
   team {label: "varchar, not null"}
-
 
 [meta] {bgcolor: "#fcecec"}
   version {label: "smallint, null"}
