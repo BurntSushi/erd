@@ -63,3 +63,54 @@ The PDF should now contain a graph that looks like this:
 
 ![Simple erd example graph](http://burntsushi.net/stuff/erd-example-simple.png)
 
+
+### The `er` file format
+
+The `er` file allows one to describe a relational schema in terms of its 
+entities (tables), attributes (columns) and relationships between entities (0 
+or 1, exactly 1, 0 or more and 1 or more).
+
+Entities are declared inside `[` and `]`. For example, this declares the entity 
+`Person` with no attributes:
+
+```
+[Person]
+```
+
+Attributes for an entity are then listed after its corresponding entity's 
+declaration. Each attribute should be on its own line. The following adds the 
+`name` and `height` attributes to the `Person` entity:
+
+```
+[Person]
+name
+height
+```
+
+Entity names and attributes may **not** contain spaces.
+
+Relationships can also be declared. Every relationship includes exactly two 
+entities (the two entities may be the same, for self-relationships). Each 
+entity in a relationship **must** have exactly one of four cardinalities:
+
+```
+Cardinality    Syntax
+0 or 1         0
+exactly 1      1
+0 or more      *
+1 or more      +
+```
+
+So for example, the following defines a relationship between `Person` and 
+`Location` that reads "every person belongs to exactly one location":
+
+```
+    Person *--1 Location
+```
+
+And here's another example that can be read as, "every platinum album has one 
+or more artists, but not every artist has a platinum album":
+
+```
+Artist +--0 PlatinumAlbums
+```
