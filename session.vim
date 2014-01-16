@@ -1,1 +1,1 @@
-au BufWritePost *.hs silent !hasktags --ctags src/*.hs
+au BufWritePost *.hs silent !hothasktags src/*.hs > tags

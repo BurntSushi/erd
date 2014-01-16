@@ -1,19 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Main where
+module Main (main) where
 
-import Control.Monad (forM_, when)
-import qualified Data.Map as M
-import Data.Maybe (fromJust, isJust, mapMaybe)
-import Data.String
+import Control.Monad (forM_)
+import qualified Data.ByteString as SB
+import Data.Maybe (fromMaybe)
 import qualified Data.Text.Lazy as L
 import System.Exit (exitFailure)
 import System.IO (hClose, hPutStrLn, stderr)
 import Text.Printf (printf)
 
 import Data.GraphViz
+import qualified Data.GraphViz.Attributes.Colors.X11 as C
 import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.GraphViz.Attributes.HTML as H
-import Data.GraphViz.Commands.IO (putDot)
 import qualified Data.GraphViz.Types.Generalised as G
 import Data.GraphViz.Types.Monadic
 
@@ -30,88 +29,77 @@ main = do
       hPutStrLn stderr err
       exitFailure
     Right er -> let dotted = dotER er
-                 in putDot dotted >> runGraphvizCanvas Dot dotted Xlib
+                    toFile h = SB.hGetContents h >>= SB.hPut (snd $ cout conf)
+                    fmt = fromMaybe Pdf (outfmt conf)
+                 in graphvizWithHandle Dot dotted fmt toFile
   hClose (snd $ cin conf)
   hClose (snd $ cout conf)
 
+-- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
 dotER :: ER -> G.DotGraph L.Text
 dotER er = graph' $ do
-  when (isJust $ title er) $ graphAttrs $ graphTitle $ fromJust $ title er
-  nodeAttrs [shape PlainText]
+  graphAttrs (graphTitle $ title er)
+  graphAttrs [A.RankDir A.FromLeft]
+  nodeAttrs [shape PlainText] -- recommended for HTML labels
+  edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
+            , A.MinLen 2 -- give some breathing room
+            , A.Style [A.SItem A.Dashed []] -- easier to read labels, maybe?
+            ]
   forM_ (entities er) $ \e ->
     node (name e) [toLabel (htmlEntity e)]
   forM_ (rels er) $ \r -> do
     let opts = roptions r
-    let relLabel = A.HtmlLabel . H.Text . htmlFont opts . L.pack . show . rtype
-    let (r1, r2) = (rel1 r, rel2 r) -- r1 is tail and r2 is head
-    let (l1, l2) = (A.TailLabel $ relLabel r1, A.HeadLabel $ relLabel r2)
+    let rlab = A.HtmlLabel . H.Text . htmlFont opts . L.pack . show
+    let (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
     let label = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " opts []
-    edge (rname r1) (rname r2) [label, l1, l2]
+    edge (entity1 r) (entity2 r) [label, l1, l2]
 
+-- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
 htmlEntity e = H.Table H.HTable
-                 { H.tableFontAttrs = Just $ fontAttrs (eoptions e)
-                 , H.tableAttrs = tableAttrs (eoptions e)
+                 { H.tableFontAttrs = Just $ optionsTo optToFont $ eoptions e
+                 , H.tableAttrs = optionsTo optToHtml (eoptions e)
                  , H.tableRows = rows
                  }
   where rows = headerRow : map htmlAttr (attribs e)
         headerRow = H.Cells [H.LabelCell [] $ H.Text text]
-        text = withLabel headerOpts $ bold $ htmlText $ name e
-        headerOpts = eoptions e `M.union` defaultHeaderAttrs
+        text = withLabelFmt " [%s]" (hoptions e) $ bold hname
+        hname = htmlFont (hoptions e) (name e)
         bold s = [H.Format H.Bold s]
 
+-- | Converts a single attribute to an HTML table row.
 htmlAttr :: ER.Attribute -> H.Row
 htmlAttr a = H.Cells [cell]
-  where cell = H.LabelCell (cellAttrs opts) (H.Text $ withLabel opts name)
+  where cell = H.LabelCell cellAttrs (H.Text $ withLabelFmt " [%s]" opts name)
         name = fkfmt $ pkfmt $ htmlFont opts (field a)
         pkfmt s = if pk a then [H.Format H.Underline s] else s
         fkfmt s = if fk a then [H.Format H.Italics s] else s
+        cellAttrs = H.Align H.HLeft : optionsTo optToHtml opts
         opts = aoptions a
 
-tableAttrs :: Options -> [H.Attribute]
-tableAttrs opts = mapMaybe optionToHtmlAttr
-                  $ M.elems $ opts `M.union` defaultTableAttrs
-
-cellAttrs :: Options -> [H.Attribute]
-cellAttrs opts = H.Align H.HLeft
-                 : mapMaybe optionToHtmlAttr (M.elems opts)
-
-fontAttrs :: Options -> [H.Attribute]
-fontAttrs = mapMaybe optionToFontAttr . M.elems
-
-withLabel :: Options -> H.Text -> H.Text
-withLabel = withLabelFmt " [%s]"
-
+-- | Formats HTML text with a label. The format string given should be
+-- in `Data.Text.printf` style. (Only font options are used from the options
+-- given.)
 withLabelFmt :: String -> Options -> H.Text -> H.Text
 withLabelFmt fmt opts s =
-  case mapMaybe optionToLabel (M.elems opts) of
+  case optionsTo optToLabel opts of
     (x:_) -> s ++ htmlFont opts (L.pack $ printf fmt $ L.unpack x)
-    otherwise -> s
+    _ -> s
 
+-- | Formats an arbitrary string with the options given (using only font
+-- attributes).
 htmlFont :: Options -> L.Text -> H.Text
-htmlFont opts s = [H.Font (fontAttrs opts) (htmlText s)]
+htmlFont opts s = [H.Font (optionsTo optToFont opts) [H.Str s]]
 
-htmlText :: L.Text -> H.Text
-htmlText s = [H.Str s]
-
-graphTitle :: L.Text -> [A.Attribute]
-graphTitle s = if L.null s then [] else
-  [ textLabel s
-  , A.FontSize 30
-  , A.LabelJust A.JLeft
-  , A.LabelLoc A.VTop
-  ]
-
-defaultTableAttrs :: Options
-defaultTableAttrs = M.fromList
-  [ ("border", Border 0)
-  , ("cellborder", CellBorder 1)
-  , ("cellspacing", CellSpacing 0)
-  , ("cellpadding", CellPadding 4)
-  ]
-
-defaultHeaderAttrs :: Options
-defaultHeaderAttrs = M.fromList
-  [ ("size", ER.FontSize 16)
-  ]
-
+-- | Extracts and formats a graph title from the options given.
+-- The options should be title options from an ER value.
+-- If a title does not exist, an empty list is returned and `graphAttrs attrs`
+-- should be a no-op.
+graphTitle :: Options -> [A.Attribute]
+graphTitle topts =
+  let glabel = optionsTo optToLabel topts
+  in if null glabel then [] else
+       [ A.LabelJust A.JLeft
+       , A.LabelLoc A.VTop
+       , A.Label $ A.HtmlLabel $ H.Text $ htmlFont topts (head glabel)
+       ]

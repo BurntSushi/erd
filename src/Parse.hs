@@ -4,8 +4,10 @@ module Parse
   )
 where
 
+import Prelude hiding (null)
+
 import Control.Monad (liftM2, when, void)
-import Data.Char (isSpace)
+import Data.Char (isAlphaNum, isSpace)
 import Data.List (find)
 import qualified Data.Map as M
 import Data.Maybe
@@ -23,6 +25,16 @@ data AST = E Entity
          | R Relation
          deriving Show
 
+data GlobalOptions = GlobalOptions { gtoptions :: Options
+                                   , ghoptions :: Options
+                                   , geoptions :: Options
+                                   , groptions :: Options
+                                   }
+                     deriving Show
+
+emptyGlobalOptions :: GlobalOptions
+emptyGlobalOptions = GlobalOptions M.empty M.empty M.empty M.empty
+
 loadER :: String -> Handle -> IO (Either String ER)
 loadER fpath f = do
   s <- hGetContents f
@@ -38,24 +50,31 @@ loadER fpath f = do
 --
 -- This preserves the ordering of the syntactic elements in the original
 -- description.
-toER :: Options -> [AST] -> Either String ER
-toER opts' = toER' (ER [] [] graphTitle)
-  where graphTitle = optionToLabel $ M.findWithDefault (Label "") "label" opts'
-        opts = M.delete "label" opts'
+toER :: GlobalOptions -> [AST] -> Either String ER
+toER gopts = toER' (ER [] [] title)
+  where title = gtoptions gopts `mergeOpts` defaultTitleOpts
 
         toER' :: ER -> [AST] -> Either String ER
         toER' er [] = Right (reversed er) >>= validRels
         toER' (ER { entities = [] }) (A a:_) =
           let name = show (field a)
            in Left $ printf "Attribute '%s' comes before first entity." name
-        toER' er@(ER { entities = e:es }) (A a:xs) = do
-          let e' = e { attribs = a:attribs e }
-          toER' (er { entities = e':es }) xs
+        toER' er@(ER { entities = e':es }) (A a:xs) = do
+          let e = e' { attribs = a:attribs e' }
+          toER' (er { entities = e:es }) xs
         toER' er@(ER { entities = es }) (E e:xs) = do
-          let e' = e { eoptions = eoptions e `M.union` opts }
-          toER' (er { entities = e':es}) xs
-        toER' er@(ER { rels = rs }) (R r:xs) =
-          toER' (er { rels = r:rs }) xs
+          let opts = eoptions e
+                     `mergeOpts` geoptions gopts
+                     `mergeOpts` defaultEntityOpts
+          let hopts = eoptions e
+                      `mergeOpts` ghoptions gopts
+                      `mergeOpts` defaultHeaderOpts
+          toER' (er { entities = e { eoptions = opts, hoptions = hopts }:es}) xs
+        toER' er@(ER { rels = rs }) (R r:xs) = do
+          let opts = roptions r
+                     `mergeOpts` groptions gopts
+                     `mergeOpts` defaultRelOpts
+          toER' (er { rels = r { roptions = opts }:rs }) xs
 
         reversed :: ER -> ER
         reversed er@(ER { entities = es, rels = rs }) =
@@ -67,20 +86,19 @@ toER opts' = toER' (ER [] [] graphTitle)
 
         validRels' :: [Relation] -> ER -> Either String ER
         validRels' [] er = return er
-        validRels' (r:rs) er = do
-          let r1 = find (\e -> name e == rname (rel1 r)) (entities er)
-          let r2 = find (\e -> name e == rname (rel2 r)) (entities er)
+        validRels' (r:_) er = do
+          let r1 = find (\e -> name e == entity1 r) (entities er)
+          let r2 = find (\e -> name e == entity2 r) (entities er)
           let err getter = Left
                              $ printf "Unknown entity '%s' in relationship."
-                             $ unpack $ rname $ getter r
-          when (isNothing r1) (err rel1)
-          when (isNothing r2) (err rel2)
+                             $ unpack $ getter r
+          when (isNothing r1) (err entity1)
+          when (isNothing r2) (err entity2)
           return er
-          
 
-document :: Parser (Options, [AST])
+document :: Parser (GlobalOptions, [AST])
 document = do skipMany (comment <|> blanks)
-              opts <- options
+              opts <- globalOptions emptyGlobalOptions
               ast <- fmap catMaybes $ manyTill top eof
               return (opts, ast)
   where top = (entity <?> "entity declaration")
@@ -95,7 +113,8 @@ entity = do n <- between (char '[') (char ']') ident
             spacesNoNew
             opts <- options
             eolComment
-            return $ Just $ E Entity { name = n, attribs = [], eoptions = opts }
+            return $ Just $ E Entity { name = n, attribs = [],
+                                       hoptions = opts, eoptions = opts }
 
 attr :: Parser (Maybe AST)
 attr = do
@@ -118,17 +137,29 @@ rel = do
   e2 <- ident
   opts <- options
 
-  t1 <-
-    case relTypeByName op1 of
-      Just t1 -> return t1
-      Nothing -> unexpected (printf "Relation type '%s' does not exist." op1)
-  t2 <-
-    case relTypeByName op2 of
-      Just t2 -> return t2
-      Nothing -> unexpected (printf "Relation type '%s' does not exist." op2)
-  let r1 = Rel { rname = e1, rtype = t1 }
-  let r2 = Rel { rname = e2, rtype = t2 }
-  return $ Just $ R Relation { rel1 = r1, rel2 = r2, roptions = opts }
+  let getCard op =
+        case cardByName op of
+          Just t -> return t
+          Nothing -> unexpected (printf "Cardinality '%s' does not exist." op)
+  t1 <- getCard op1
+  t2 <- getCard op2
+  return $ Just $ R Relation { entity1 = e1, entity2 = e2
+                               , card1 = t1, card2 = t2, roptions = opts }
+
+globalOptions :: GlobalOptions -> Parser GlobalOptions
+globalOptions gopts = option "" ident >>= \n ->
+  if null n then
+    return gopts
+  else do
+    opts <- options
+    case n of
+      "title"        -> emptiness >> globalOptions (gopts { gtoptions = opts})
+      "header"       -> emptiness >> globalOptions (gopts { ghoptions = opts})
+      "entity"       -> emptiness >> globalOptions (gopts { geoptions = opts})
+      "relationship" -> emptiness >> globalOptions (gopts { groptions = opts})
+      _ -> unexpected (printf ("Global option group '%s' is not valid. (Valid "
+                              ++ "groups are title, header, entity, "
+                              ++ "relationship.)") (unpack n))
 
 options :: Parser (M.Map String Option)
 options =
@@ -158,7 +189,9 @@ comment = do
 ident :: Parser Text
 ident = do
   spacesNoNew
-  n <- fmap pack (many1 alphaNum)
+  let p = satisfy (\c -> c == '_' || isAlphaNum c)
+            <?> "letter, digit or underscore"
+  n <- fmap pack (many1 p)
   spacesNoNew
   return n
 
@@ -170,9 +203,6 @@ eolComment = spacesNoNew >> (eol <|> void comment)
 
 spacesNoNew :: Parser ()
 spacesNoNew = skipMany $ satisfy $ \c -> c /= '\n' && c /= '\r' && isSpace c
-
-spacesEol :: Parser ()
-spacesEol = spacesNoNew >> eol
 
 eol :: Parser ()
 eol = eof <|> do

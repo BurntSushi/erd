@@ -3,25 +3,73 @@
 
 name:                erd
 version:             0.1.0.0
-synopsis:            An entity-relationship diagram generator from a plain text description.
--- description:         
 homepage:            https://github.com/BurntSushi/erd
 license:             PublicDomain
 license-file:        UNLICENSE
 author:              Andrew Gallant
 maintainer:          jamslam@gmail.com
--- copyright:           
 category:            Database
 build-type:          Simple
 cabal-version:       >=1.8
+synopsis:
+  An entity-relationship diagram generator from a plain text description
+  (using GraphViz).
+description:         
+  erd transforms a plain text description of a relational database schema to a 
+  graphical representation of that schema. It is intended that the graph make
+  use of common conventions when depicting entity-relationship diagrams,
+  including modeling the cardinality of relationships between entities.
+  .
+  A quick example that transforms an `er` file to a PDF:
+  .
+  > $ curl 'https://raw.github.com/BurntSushi/erd/master/examples/simple.er' > simple.er
+  > $ cat simple.er
+  > # Entities are declared in '[' ... ']'. All attributes after the entity header
+  > # up until the end of the file (or the next entity declaration) correspond
+  > # to this entity.
+  > [Person]
+  > *name
+  > height
+  > weight
+  > +birth_location_id
+  > 
+  > [Location]
+  > *id
+  > city
+  > state
+  > country
+  > 
+  > # Each relationship must be between exactly two entities, which need not
+  > # be distinct. Each entity in the relationship has exactly one of four
+  > # possible cardinalities:
+  > #
+  > # Cardinality    Syntax
+  > # 0 or 1         0
+  > # exactly 1      1
+  > # 0 or more      *
+  > # 1 or more      +
+  > Person *--1 Location
+  > $ erd -i simple.er -o simple.pdf
+  .
+  The PDF should now contain a graph that looks like this:
+  .
+  <<http://burntsushi.net/stuff/erd-example-simple.png>>
+  .
+  See the <https://github.com/BurntSushi/erd#readme README.md> file for more 
+  examples and instructions on how to write ER files.
+
+source-repository head
+  type: git
+  location: git://github.com/BurntSushi/erd.git
 
 executable erd
   hs-source-dirs: src
   main-is: Main.hs
-  -- ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
   build-depends:
     base == 4.6.*
     , graphviz == 2999.16.*
     , text == 0.11.*
     , parsec == 3.1.*
     , containers == 0.5.*
+    , bytestring == 0.10.*
