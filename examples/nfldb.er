@@ -1,5 +1,12 @@
 title {label: "nfldb Entity-Relationship diagram (condensed)", size: "20"}
 
+# Nice colors from Erwiz:
+# red #fcecec
+# blue #ececfc
+# green #d0e0d0
+# yellow #fbfbdb
+# orange #eee0a0
+
 # Entities
 
 [player] {bgcolor: "#d0e0d0"}

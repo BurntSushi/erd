@@ -336,3 +336,15 @@ Note though that `erd` writes entities as HTML tables, so the resulting `dot`
 may not be so useful. (I would not be against a small addition to `erd` that 
 uses no formatting and writes entities as regular dot tables.)
 
+
+### Similar software
+
+Surprisingly, the only other software I'm aware of that translates a plain text 
+description of a relational schema to a graphical visualization is 
+[erwiz](https://github.com/slopjong/Erwiz). The project appears to be 
+abandoned.
+
+If you've used `erwiz` before, you'll notice that the format of the `er` file 
+is inspired by it. The `er` format is a bit more lightweight, but its general 
+structure is similar.
+
