@@ -12,8 +12,7 @@ category:            Database
 build-type:          Simple
 cabal-version:       >=1.8
 synopsis:
-  An entity-relationship diagram generator from a plain text description
-  (using GraphViz).
+  An entity-relationship diagram generator from a plain text description.
 description:         
   erd transforms a plain text description of a relational database schema to a 
   graphical representation of that schema. It is intended that the graph make
@@ -65,7 +64,7 @@ source-repository head
 executable erd
   hs-source-dirs: src
   main-is: Main.hs
-  ghc-options: -Wall -Werror -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
   build-depends:
     base == 4.6.*
     , graphviz == 2999.16.*
