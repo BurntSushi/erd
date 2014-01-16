@@ -301,7 +301,7 @@ where the opening curly brace starts on the same line as the
 entity/attribute/relationship/directive. The option name precedes a colon and 
 the option value comes after the colon in double quotes (even for integer 
 values). The value is then proceded by either a comma or an ending curly brace. 
-Also note that trailings commas are allowed and that options may be specified 
+Also note that trailing commas are allowed and that options may be specified 
 over more than one line. For example, the following is a valid `er` file:
 
 ```
