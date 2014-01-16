@@ -16,7 +16,7 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 ### Installation
 
-[erd is on hackage](http://burntsushi.net/docs/haddock/erd), so you can install 
+[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal:
 
     cabal install erd
