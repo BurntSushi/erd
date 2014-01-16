@@ -325,5 +325,7 @@ without a lot of fiddling with its options.
 
 If you have more exotic needs, then I suggest that either `erd` is not the 
 right tool, *or* you could use `erd` to output an `er` file as a `dot` file. 
-You can then customize it further manually or using some other tool.
+You can then customize it further manually or using some other tool:
+
+    erd -i something.er -o something.dot
 
