@@ -10,6 +10,9 @@ version):
 
 [![ER diagram for nfldb](http://burntsushi.net/stuff/erd/example-nfldb.png)](http://burntsushi.net/stuff/erd/example-nfldb.pdf)
 
+The [corresponding `er` file is in the `examples` 
+directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
+
 
 ### Installation
 
