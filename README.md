@@ -323,7 +323,7 @@ are "good enough" from simple plain text descriptions without a lot of
 complexity. `erd` will implicitly trust GraphViz to "do the right thing" 
 without a lot of fiddling with its options.
 
-If you require more exotic needs, then I suggest that either `erd` is not the 
+If you have more exotic needs, then I suggest that either `erd` is not the 
 right tool, *or* you could use `erd` to output an `er` file as a `dot` file. 
 You can then customize it further manually or using some other tool.
 
