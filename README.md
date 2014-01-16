@@ -315,3 +315,15 @@ over more than one line. For example, the following is a valid `er` file:
 ```
       
 
+### Philosophy
+
+I don't intend for `erd` to have a large feature set with a lot of options for 
+customizing the appearance of ER diagrams. `erd` should produce diagrams that 
+are "good enough" from simple plain text descriptions without a lot of 
+complexity. `erd` will implicitly trust GraphViz to "do the right thing" 
+without a lot of fiddling with its options.
+
+If you require more exotic needs, then I suggest that either `erd` is not the 
+right tool, *or* you could use `erd` to output an `er` file as a `dot` file. 
+You can then customize it further manually or using some other tool.
+
