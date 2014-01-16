@@ -327,5 +327,12 @@ If you have more exotic needs, then I suggest that either `erd` is not the
 right tool, *or* you could use `erd` to output an `er` file as a `dot` file. 
 You can then customize it further manually or using some other tool:
 
+You can output a `dot` file using the `--fmt` option or by simply using it as 
+an extension:
+
     erd -i something.er -o something.dot
+
+Note though that `erd` writes entities as HTML tables, so the resulting `dot` 
+may not be so useful. (I would not be against a small addition to `erd` that 
+uses no formatting and writes entities as regular dot tables.)
 
