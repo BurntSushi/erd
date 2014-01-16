@@ -305,7 +305,7 @@ over more than one line. For example, the following is a valid `er` file:
 [Person]
   name {
     label: "string",
-    color: "#3366ff",
+    color: "#3366ff", # i like bright blue
   }
   weight {
     label: "int",}
