@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                erd
-version:             0.1.0.0
+version:             0.1.1.0
 homepage:            https://github.com/BurntSushi/erd
 license:             PublicDomain
 license-file:        UNLICENSE
@@ -65,6 +65,7 @@ executable erd
   hs-source-dirs: src
   main-is: Main.hs
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  other-modules: Config, ER, Parse
   build-depends:
     base == 4.6.*
     , graphviz == 2999.16.*
