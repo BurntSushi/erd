@@ -66,7 +66,7 @@ The PDF should now contain a graph that looks like this:
 
 ### The `er` file format
 
-The `er` file allows one to describe a relational schema in terms of its 
+The `er` format allows one to describe a relational schema in terms of its 
 entities (tables), attributes (columns) and relationships between entities (0 
 or 1, exactly 1, 0 or more and 1 or more).
 
@@ -89,9 +89,24 @@ height
 
 Entity names and attributes may **not** contain spaces.
 
-Relationships can also be declared. Every relationship includes exactly two 
-entities (the two entities may be the same, for self-relationships). Each 
-entity in a relationship **must** have exactly one of four cardinalities:
+Any number of attributes may be declared as a primary key for its entity by 
+prefixing the attribute with a `*`. Similarly, an attribute may be declared
+as a foreign key by prefixing the attribute with a `+`:
+
+```
+[Person]
+*name
++birth_location_id
+```
+
+An attribute may be *both* a primary key and a foreign key by prefixing the
+name with a `*` and a `+` in any order.
+
+
+Relationships can also be declared *anywhere in an ER file*. Every relationship 
+includes exactly two entities (the two entities may be the same, for 
+self-relationships). Each entity in a relationship **must** have exactly one of 
+four cardinalities:
 
 ```
 Cardinality    Syntax
@@ -105,7 +120,7 @@ So for example, the following defines a relationship between `Person` and
 `Location` that reads "every person belongs to exactly one location":
 
 ```
-    Person *--1 Location
+Person *--1 Location
 ```
 
 And here's another example that can be read as, "every platinum album has one 
@@ -114,3 +129,22 @@ or more artists, but not every artist has a platinum album":
 ```
 Artist +--0 PlatinumAlbums
 ```
+
+### Fonts, colors, labels, ...
+
+The `er` format also has limited support for customizing the appearance of your 
+ER diagram. For example, the following will show the entity with a background
+color of `#ececfc` and a font size of `20`:
+
+```
+[Person] {bgcolor: "#ececfc", size: "20"}
+name
+height
+weight
+```
+
+Which looks like:
+
+![example of changing background 
+color](http://burntsushi.net/stuff/erd/example-bgcolor.png)
+
