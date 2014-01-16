@@ -262,3 +262,9 @@ player      1--* play_player
 ```
 
 
+### All formatting options
+
+`erd` only exposes a subset of formatting options made available by GraphViz. 
+I'm not entirely opposed to expanding this list if there's a compelling reason 
+to do so, but I'd prefer to keep it small and simple.
+
