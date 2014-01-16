@@ -147,19 +147,16 @@ rel = do
                                , card1 = t1, card2 = t2, roptions = opts }
 
 globalOptions :: GlobalOptions -> Parser GlobalOptions
-globalOptions gopts = option "" ident >>= \n ->
-  if null n then
-    return gopts
-  else do
+globalOptions gopts =
+  option gopts $ try $ do
+    n <- ident 
     opts <- options
     case n of
       "title"        -> emptiness >> globalOptions (gopts { gtoptions = opts})
       "header"       -> emptiness >> globalOptions (gopts { ghoptions = opts})
       "entity"       -> emptiness >> globalOptions (gopts { geoptions = opts})
       "relationship" -> emptiness >> globalOptions (gopts { groptions = opts})
-      _ -> unexpected (printf ("Global option group '%s' is not valid. (Valid "
-                              ++ "groups are title, header, entity, "
-                              ++ "relationship.)") (unpack n))
+      _ -> fail "not a valid directive"
 
 options :: Parser (M.Map String Option)
 options =
