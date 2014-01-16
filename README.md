@@ -8,7 +8,7 @@ eps, png, jpg, plain text and dot.
 Here's an example of the output produced by `erd` (click on it for a larger PDF 
 version):
 
-[![ER diagram for nfldb](http://burntsushi.net/stuff/nfldb/nfldb-condensed.png)](http://burntsushi.net/stuff/nfldb/nfldb-condensed.pdf)
+[![ER diagram for nfldb](http://burntsushi.net/stuff/erd/example-nfldb.png)](http://burntsushi.net/stuff/erd/example-nfldb.pdf)
 
 
 ### Installation
