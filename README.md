@@ -16,8 +16,12 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 ### Installation
 
+`erd` requires [Haskell](http://www.haskell.org/platform/) and
+[GraphViz](http://www.graphviz.org/Download..php). Both are available for 
+Windows, Mac and Linux.
+
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
-it with cabal:
+it with cabal (which is included with the Haskell platform):
 
     cabal install erd
 
