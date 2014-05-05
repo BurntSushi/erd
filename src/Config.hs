@@ -125,7 +125,7 @@ toGraphFmt ext = M.findWithDefault Nothing ext fmts
 usageExit :: IO a
 usageExit = usage >> exitFailure
 
-usage :: IO a
+usage :: IO ()
 usage = ef "%s\n" $ O.usageInfo "Usage: erd [flags]" opts
 
 ef :: HPrintfType r => String -> r

@@ -67,9 +67,9 @@ executable erd
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
   other-modules: Config, ER, Parse
   build-depends:
-    base == 4.6.*
+    base == 4.7.*
     , graphviz == 2999.16.*
-    , text == 0.11.*
+    , text == 1.*
     , parsec == 3.1.*
     , containers == 0.5.*
     , bytestring == 0.10.*
