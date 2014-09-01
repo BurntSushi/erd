@@ -122,7 +122,7 @@ four cardinalities:
 
 ```
 Cardinality    Syntax
-0 or 1         0
+0 or 1         ?
 exactly 1      1
 0 or more      *
 1 or more      +
