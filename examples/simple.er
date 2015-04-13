@@ -5,9 +5,10 @@
 *name
 height
 weight
-+birth_location_id
+`birth date`
++birth_place_id
 
-[Location]
+[`Birth Place`]
 *id
 city
 state
@@ -22,4 +23,4 @@ country
 # exactly 1      1
 # 0 or more      *
 # 1 or more      +
-Person *--1 Location
+Person *--1 `Birth Place`
