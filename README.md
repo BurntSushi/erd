@@ -1,26 +1,26 @@
-This utility takes a plain text description of entities, their attributes and 
-the relationships between entities and produces a visual diagram modeling the 
-description. The visualization is produced by using Dot with GraphViz. There 
+This utility takes a plain text description of entities, their attributes and
+the relationships between entities and produces a visual diagram modeling the
+description. The visualization is produced by using Dot with GraphViz. There
 are limited options for specifying color and font information. Also, `erd` can
-output graphs in a variety of formats, including but not limited to: pdf, svg, 
+output graphs in a variety of formats, including but not limited to: pdf, svg,
 eps, png, jpg, plain text and dot.
 
-Here's an example of the output produced by `erd` (click on it for a larger PDF 
+Here's an example of the output produced by `erd` (click on it for a larger PDF
 version):
 
 [![ER diagram for nfldb](http://burntsushi.net/stuff/erd/example-nfldb.png)](http://burntsushi.net/stuff/erd/example-nfldb.pdf)
 
-The [corresponding `er` file is in the `examples` 
+The [corresponding `er` file is in the `examples`
 directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 
 ### Installation
 
 `erd` requires [Haskell](http://www.haskell.org/platform/) and
-[GraphViz](http://www.graphviz.org/Download..php). Both are available for 
+[GraphViz](http://www.graphviz.org/Download..php). Both are available for
 Windows, Mac and Linux.
 
-[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
+[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install
 it with cabal (which is included with the Haskell platform):
 
     cabal install erd
@@ -37,7 +37,7 @@ Usage information is available with `erd --help`.
 
 ### Quick example
 
-Before describing the ER file, let's try making an ER diagram from a small 
+Before describing the ER file, let's try making an ER diagram from a small
 example:
 
 ```bash
@@ -50,9 +50,10 @@ $ cat simple.er
 *name
 height
 weight
-+birth_location_id
+`birth date`
++birth_place_id
 
-[Location]
+[`Birth Place`]
 *id
 city
 state
@@ -67,7 +68,7 @@ country
 # exactly 1      1
 # 0 or more      *
 # 1 or more      +
-Person *--1 Location
+Person *--1 `Birth Place`
 $ erd -i simple.er -o simple.pdf
 ```
 
@@ -78,19 +79,19 @@ The PDF should now contain a graph that looks like this:
 
 ### The `er` file format
 
-The `er` format allows one to describe a relational schema in terms of its 
-entities (tables), attributes (columns) and relationships between entities (0 
+The `er` format allows one to describe a relational schema in terms of its
+entities (tables), attributes (columns) and relationships between entities (0
 or 1, exactly 1, 0 or more and 1 or more).
 
-Entities are declared inside `[` and `]`. For example, this declares the entity 
+Entities are declared inside `[` and `]`. For example, this declares the entity
 `Person` with no attributes:
 
 ```
 [Person]
 ```
 
-Attributes for an entity are then listed after its corresponding entity's 
-declaration. Each attribute should be on its own line. The following adds the 
+Attributes for an entity are then listed after its corresponding entity's
+declaration. Each attribute should be on its own line. The following adds the
 `name` and `height` attributes to the `Person` entity:
 
 ```
@@ -99,25 +100,32 @@ name
 height
 ```
 
-Entity names and attributes may **not** contain spaces.
+Entity names and attributes may contain spaces, if quoted with backticks:
 
-Any number of attributes may be declared as a primary key for its entity by 
-prefixing the attribute with a `*`. Similarly, an attribute may be declared
+```
+[Person]
+name
+height
+`birth date`
+```
+
+Any number of attributes may be declared as a primary key for its entity by
+prefixing the attribute with a `\*`. Similarly, an attribute may be declared
 as a foreign key by prefixing the attribute with a `+`:
 
 ```
 [Person]
 *name
-+birth_location_id
++birth_place_id
 ```
 
 An attribute may be *both* a primary key and a foreign key by prefixing the
-name with a `*` and a `+` in any order. Note that primary keys are underlined
+name with a `\*` and a `+` in any order. Note that primary keys are underlined
 while foreign keys are italicized.
 
-Relationships can also be declared *anywhere in an ER file*. Every relationship 
-includes exactly two entities (the two entities may be the same, for 
-self-relationships). Each entity in a relationship **must** have exactly one of 
+Relationships can also be declared *anywhere in an ER file*. Every relationship
+includes exactly two entities (the two entities may be the same, for
+self-relationships). Each entity in a relationship **must** have exactly one of
 four cardinalities:
 
 ```
@@ -128,14 +136,14 @@ exactly 1      1
 1 or more      +
 ```
 
-So for example, the following defines a relationship between `Person` and 
-`Location` that reads "every person belongs to exactly one location":
+So for example, the following defines a relationship between `Person` and
+`Birth Place` that reads "every person has exactly one birth place":
 
 ```
-Person *--1 Location
+Person *--1 `Birth Place`
 ```
 
-And here's another example that can be read as, "every platinum album has one 
+And here's another example that can be read as, "every platinum album has one
 or more artists, but not every artist has a platinum album":
 
 ```
@@ -144,7 +152,7 @@ Artist +--? PlatinumAlbums
 
 ### Fonts, colors, labels, ...
 
-The `er` format also has limited support for customizing the appearance of your 
+The `er` format also has limited support for customizing the appearance of your
 ER diagram. For example, the following will show the entity with a background
 color of `#ececfc` and a font size of `20`:
 
@@ -157,10 +165,10 @@ weight
 
 Which looks like:
 
-![example of changing background 
+![example of changing background
 color](http://burntsushi.net/stuff/erd/example-bgcolor.png)
 
-Alternatively, you can specify the background color of every entity with a 
+Alternatively, you can specify the background color of every entity with a
 special directive at the top of the file:
 
 ```
@@ -171,20 +179,20 @@ name
 height
 weight
 
-[Location]
+[`Birth Place`]
 place
 ```
 
-There are three other directives: `title`, `header` and `relationship`. The 
-`title` directive allows one to specify a title for the graph and provide 
-options for formatting it. The `header` directive allows one to customize the 
-formatting of every entity header. And similarly for `relationship`. Note that 
+There are three other directives: `title`, `header` and `relationship`. The
+`title` directive allows one to specify a title for the graph and provide
+options for formatting it. The `header` directive allows one to customize the
+formatting of every entity header. And similarly for `relationship`. Note that
 global options are overwritten by local options.
 
 Note that directives **must come before anything else in an ER file**.
 
-Here's an example depicting the first schema shown at the top of this README 
-(note that this is auto-generated by 
+Here's an example depicting the first schema shown at the top of this README
+(note that this is auto-generated by
 [nfldb-write-erd](https://github.com/BurntSushi/nfldb/blob/master/scripts/nfldb-write-erd)):
 
 ```
@@ -273,39 +281,39 @@ player      1--* play_player
 
 ### All formatting options
 
-`erd` only exposes a subset of formatting options made available by GraphViz. 
-I'm not entirely opposed to expanding this list if there's a compelling reason 
+`erd` only exposes a subset of formatting options made available by GraphViz.
+I'm not entirely opposed to expanding this list if there's a compelling reason
 to do so, but I'd prefer to keep it small and simple.
 
-Note that not all options are applicable on all items. For example, a title 
+Note that not all options are applicable on all items. For example, a title
 cannot have a background color (it will just be ignored by GraphViz).
 
-Colors can be specified in hexadecimal notation prefixed with a `#`, e.g., 
-`#3366ff` or they may be [written as their English 
+Colors can be specified in hexadecimal notation prefixed with a `#`, e.g.,
+`#3366ff` or they may be [written as their English
 names](http://hackage.haskell.org/package/graphviz-2999.8.0.0/docs/Data-GraphViz-Attributes-Colors.html#t:X11Color).
 
-* **label** A plain text string used to label the item. For entity names and 
-  attributes, a label is shown next to the name in square brackets. For 
-  relationships, a label is drawn near the center of the edge. For the special 
+* **label** A plain text string used to label the item. For entity names and
+  attributes, a label is shown next to the name in square brackets. For
+  relationships, a label is drawn near the center of the edge. For the special
   `title` directive, the label corresponds to the graph title.
 * **color** Specifies the font color. Valid everywhere.
 * **bgcolor** Specifies the background color. Only valid for entities and
   attributes.
 * **size** Specifies the font size. Valid everywhere.
-* **font** Specifies the font. Valid everywhere. See 
-  [this](http://www.graphviz.org/doc/fontfaq.txt) and 
-  [this](http://www.graphviz.org/doc/info/attrs.html#d:fontname) for 
-  information about fonts in GraphViz. TL;DR: Stick with one of the following: 
+* **font** Specifies the font. Valid everywhere. See
+  [this](http://www.graphviz.org/doc/fontfaq.txt) and
+  [this](http://www.graphviz.org/doc/info/attrs.html#d:fontname) for
+  information about fonts in GraphViz. TL;DR: Stick with one of the following:
   `Times-Roman`, `Helvetica` or `Courier`.
 * **border-color** Border color. Only works for entities or attributes.
 * **border** Border size in pixels. Only works for entities and attributes.
 
-Formatting options are always specified as key-value pairs in curly braces, 
-where the opening curly brace starts on the same line as the 
-entity/attribute/relationship/directive. The option name precedes a colon and 
-the option value comes after the colon in double quotes (even for integer 
-values). The value is then proceded by either a comma or an ending curly brace. 
-Also note that trailing commas are allowed and that options may be specified 
+Formatting options are always specified as key-value pairs in curly braces,
+where the opening curly brace starts on the same line as the
+entity/attribute/relationship/directive. The option name precedes a colon and
+the option value comes after the colon in double quotes (even for integer
+values). The value is then proceded by either a comma or an ending curly brace.
+Also note that trailing commas are allowed and that options may be specified
 over more than one line. For example, the following is a valid `er` file:
 
 ```
@@ -317,38 +325,38 @@ over more than one line. For example, the following is a valid `er` file:
   weight {
     label: "int",}
 ```
-      
+
 
 ### Philosophy
 
-I don't intend for `erd` to have a large feature set with a lot of options for 
-customizing the appearance of ER diagrams. `erd` should produce diagrams that 
-are "good enough" from simple plain text descriptions without a lot of 
-complexity. `erd` will implicitly trust GraphViz to "do the right thing" 
+I don't intend for `erd` to have a large feature set with a lot of options for
+customizing the appearance of ER diagrams. `erd` should produce diagrams that
+are "good enough" from simple plain text descriptions without a lot of
+complexity. `erd` will implicitly trust GraphViz to "do the right thing"
 without a lot of fiddling with its options.
 
-If you have more exotic needs, then I suggest that either `erd` is not the 
-right tool, *or* you could use `erd` to output an `er` file as a `dot` file. 
+If you have more exotic needs, then I suggest that either `erd` is not the
+right tool, *or* you could use `erd` to output an `er` file as a `dot` file.
 You can then customize it further manually or using some other tool.
 
-You can output a `dot` file using the `--fmt` option or by simply using it as 
+You can output a `dot` file using the `--fmt` option or by simply using it as
 a file extension:
 
     erd -i something.er -o something.dot
 
-Note though that `erd` writes entities as HTML tables, so the resulting `dot` 
-may not be so useful. (I would not be against a small addition to `erd` that 
+Note though that `erd` writes entities as HTML tables, so the resulting `dot`
+may not be so useful. (I would not be against a small addition to `erd` that
 uses no formatting and writes entities as regular dot tables.)
 
 
 ### Similar software
 
-Surprisingly, the only other software I'm aware of that translates a plain text 
-description of a relational schema to a graphical visualization is 
-[erwiz](https://github.com/slopjong/Erwiz). The project appears to be 
+Surprisingly, the only other software I'm aware of that translates a plain text
+description of a relational schema to a graphical visualization is
+[erwiz](https://github.com/slopjong/Erwiz). The project appears to be
 abandoned.
 
-If you've used `erwiz` before, you'll notice that the format of the `er` file 
-is inspired by it. The `er` format is a bit more lightweight, but its general 
+If you've used `erwiz` before, you'll notice that the format of the `er` file
+is inspired by it. The `er` format is a bit more lightweight, but its general
 structure is similar.
 
