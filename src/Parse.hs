@@ -194,7 +194,7 @@ identQuoted :: Parser Text
 identQuoted = do
   char '`'
   let p = satisfy (\c -> c == '_' || c == ' ' || isAlphaNum c)
-            <?> "letter, digit or underscore"
+            <?> "letter, digit, space or underscore"
   n <- fmap pack (many1 p)
   char '`'
   return n
