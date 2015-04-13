@@ -186,8 +186,17 @@ comment = do
 ident :: Parser Text
 ident = do
   spacesNoNew
-  n <- identNoSpace
+  n <- identQuoted <|> identNoSpace
   spacesNoNew
+  return n
+
+identQuoted :: Parser Text
+identQuoted = do
+  char '`'
+  let p = satisfy (\c -> c == '_' || c == ' ' || isAlphaNum c)
+            <?> "letter, digit or underscore"
+  n <- fmap pack (many1 p)
+  char '`'
   return n
 
 identNoSpace :: Parser Text
