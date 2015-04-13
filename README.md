@@ -50,9 +50,10 @@ $ cat simple.er
 *name
 height
 weight
-+birth_location_id
+`birth date`
++birth_place_id
 
-[Location]
+[`Birth Place`]
 *id
 city
 state
@@ -67,7 +68,7 @@ country
 # exactly 1      1
 # 0 or more      *
 # 1 or more      +
-Person *--1 Location
+Person *--1 `Birth Place`
 $ erd -i simple.er -o simple.pdf
 ```
 
@@ -99,7 +100,14 @@ name
 height
 ```
 
-Entity names and attributes may **not** contain spaces.
+Entity names and attributes may contain spaces, if quoted with backticks:
+
+```
+[Person]
+name
+height
+`birth date`
+```
 
 Any number of attributes may be declared as a primary key for its entity by 
 prefixing the attribute with a `*`. Similarly, an attribute may be declared
@@ -108,7 +116,7 @@ as a foreign key by prefixing the attribute with a `+`:
 ```
 [Person]
 *name
-+birth_location_id
++birth_place_id
 ```
 
 An attribute may be *both* a primary key and a foreign key by prefixing the
@@ -129,10 +137,10 @@ exactly 1      1
 ```
 
 So for example, the following defines a relationship between `Person` and 
-`Location` that reads "every person belongs to exactly one location":
+`Birth Place` that reads "every person has exactly one birth place":
 
 ```
-Person *--1 Location
+Person *--1 `Birth Place`
 ```
 
 And here's another example that can be read as, "every platinum album has one 
@@ -171,7 +179,7 @@ name
 height
 weight
 
-[Location]
+[`Birth Place`]
 place
 ```
 
