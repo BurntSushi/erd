@@ -7,7 +7,7 @@ where
 import Prelude hiding (null)
 
 import Control.Monad (liftM2, when, void)
-import Data.Char (isAlphaNum, isSpace)
+import Data.Char (isAlphaNum, isSpace, isControl)
 import Data.List (find)
 import qualified Data.Map as M
 import Data.Maybe
@@ -193,8 +193,8 @@ ident = do
 identQuoted :: Parser Text
 identQuoted = do
   char '`'
-  let p = satisfy (\c -> c == '_' || c == ' ' || isAlphaNum c)
-            <?> "letter, digit, space or underscore"
+  let p = satisfy (\c -> c /= '`' && not (isControl c) )
+            <?> "any character except ` or control characters"
   n <- fmap pack (many1 p)
   char '`'
   return n
