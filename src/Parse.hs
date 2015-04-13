@@ -184,7 +184,10 @@ comment = do
   return Nothing
 
 ident :: Parser Text
-ident = do
+ident = identNoSpace
+
+identNoSpace :: Parser Text
+identNoSpace = do
   spacesNoNew
   let p = satisfy (\c -> c == '_' || isAlphaNum c)
             <?> "letter, digit or underscore"
