@@ -184,15 +184,17 @@ comment = do
   return Nothing
 
 ident :: Parser Text
-ident = identNoSpace
+ident = do
+  spacesNoNew
+  n <- identNoSpace
+  spacesNoNew
+  return n
 
 identNoSpace :: Parser Text
 identNoSpace = do
-  spacesNoNew
   let p = satisfy (\c -> c == '_' || isAlphaNum c)
             <?> "letter, digit or underscore"
   n <- fmap pack (many1 p)
-  spacesNoNew
   return n
 
 emptiness :: Parser ()
