@@ -55,9 +55,9 @@ weight
 
 [`Birth Place`]
 *id
-city
-state
-country
+`birth city`
+'birth state'
+"birth country"
 
 # Each relationship must be between exactly two entities, which need not
 # be distinct. Each entity in the relationship has exactly one of four
@@ -100,13 +100,16 @@ name
 height
 ```
 
-Entity names and attributes may contain spaces, if quoted with backticks:
+Entity names and attributes may contain spaces and mostly any character,
+except ASCII control characters like carriage return and line feed,
+if quoted with backticks, simple quotes or double quotes:
 
 ```
-[Person]
-name
-height
-`birth date`
+[`Birth Place`]
+*id
+`birth city`
+'birth state'
+"birth country"
 ```
 
 Any number of attributes may be declared as a primary key for its entity by

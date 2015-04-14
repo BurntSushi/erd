@@ -10,9 +10,9 @@ weight
 
 [`Birth Place`]
 *id
-city
-state
-country
+`birth city`
+'birth state'
+"birth country"
 
 # Each relationship must be between exactly two entities, which need not
 # be distinct. Each entity in the relationship has exactly one of four
