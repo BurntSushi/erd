@@ -192,11 +192,11 @@ ident = do
 
 identQuoted :: Parser Text
 identQuoted = do
-  char '`'
-  let p = satisfy (\c -> c /= '`' && not (isControl c) )
-            <?> "any character except ` or control characters"
+  quote <- oneOf "'\"`"
+  let p = satisfy (\c -> c /= quote && not (isControl c) )
+            <?> "any character except " ++ [quote] ++ " or control characters"
   n <- fmap pack (many1 p)
-  char '`'
+  char quote
   return n
 
 identNoSpace :: Parser Text
