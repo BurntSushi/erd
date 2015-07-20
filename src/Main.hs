@@ -28,7 +28,7 @@ main = do
     Left err -> do
       hPutStrLn stderr err
       exitFailure
-    Right er -> let dotted = dotER er
+    Right er -> let dotted = dotER conf er
                     toFile h = SB.hGetContents h >>= SB.hPut (snd $ cout conf)
                     fmt = fromMaybe Pdf (outfmt conf)
                  in graphvizWithHandle Dot dotted fmt toFile
@@ -36,10 +36,12 @@ main = do
   hClose (snd $ cout conf)
 
 -- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
-dotER :: ER -> G.DotGraph L.Text
-dotER er = graph' $ do
+dotER :: Config -> ER -> G.DotGraph L.Text
+dotER conf er = graph' $ do
   graphAttrs (graphTitle $ title er)
-  graphAttrs [A.RankDir A.FromLeft]
+  graphAttrs [ A.RankDir A.FromLeft
+             , A.Splines (edgeType conf)
+             ]
   nodeAttrs [shape PlainText] -- recommended for HTML labels
   edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
             , A.MinLen 2 -- give some breathing room

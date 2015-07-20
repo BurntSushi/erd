@@ -15,12 +15,14 @@ import System.IO (Handle, IOMode(..), stdin, stdout, stderr, openFile)
 import Text.Printf (HPrintfType, hPrintf, printf)
 
 import qualified Data.GraphViz.Commands as G
+import qualified Data.GraphViz.Attributes.Complete as A
 
 -- | Config represents all information from command line flags.
 data Config =
   Config { cin :: (String, Handle)
          , cout :: (String, Handle)
          , outfmt :: Maybe G.GraphvizOutput
+         , edgeType :: A.EdgeType
          }
 
 defaultConfig :: Config
@@ -28,6 +30,7 @@ defaultConfig =
   Config { cin = ("<stdin>", stdin)
          , cout = ("<stdout>", stdout)
          , outfmt = Nothing
+         , edgeType = A.SplineEdges
          }
 
 -- | Creates a new Config value from command line options.
@@ -93,6 +96,20 @@ opts =
                 "FMT")
       (printf "Force the output format to one of:\n%s"
               (intercalate ", " $ M.keys fmts))
+  , O.Option "e" ["edge"]
+      (O.ReqArg (\edge cIO -> do
+                    c <- cIO
+                    let edgeG = toEdgeG edge
+                    case edgeG of
+                      Nothing -> do
+                        ef "'%s' is not a valid type of edge." edge
+                        exitFailure
+                      Just edgeType ->
+                        return $ c { edgeType = edgeType }
+                )
+                "EDGE")
+      (printf "Select one type of edge:\n%s"
+              (intercalate ", " $ M.keys edges))
   ]
 
 -- | A subset of formats supported from GraphViz.
@@ -112,6 +129,18 @@ fmts = M.fromList
   , ("plain", Just G.Plain)
   ]
 
+edges :: M.Map String (Maybe A.EdgeType)
+edges = M.fromList
+  [ ("spline", Just A.SplineEdges)
+  , ("ortho", Just A.Ortho)
+  , ("line", Just A.LineEdges)
+  , ("noedge", Just A.NoEdges)
+  , ("poly", Just A.PolyLine)
+  , ("curved", Just A.Curved)
+  , ("compound", Just A.CompoundEdge)
+  ]
+
+
 -- | takeExtension returns the last extension from a file path, or the
 -- empty string if no extension was found. e.g., the extension of
 -- "wat.pdf" is "pdf".
@@ -121,6 +150,9 @@ takeExtension s = if null rest then "" else reverse ext
 
 toGraphFmt :: String -> Maybe G.GraphvizOutput
 toGraphFmt ext = M.findWithDefault Nothing ext fmts
+
+toEdgeG :: String -> Maybe A.EdgeType
+toEdgeG edge = M.findWithDefault Nothing edge edges
 
 usageExit :: IO a
 usageExit = usage >> exitFailure
