@@ -30,7 +30,6 @@ and build from source:
 
     git clone git://github.com/BurntSushi/erd
     cd erd
-    stack init
     stack install
 
 `stack install` will put the binary into Stack's standard binary
