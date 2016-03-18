@@ -1,4 +1,6 @@
 .*.swp
+*~
 dist
 bin
 tags
+.stack-work
