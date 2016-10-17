@@ -20,6 +20,12 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 [GraphViz](http://www.graphviz.org/Download..php). Both are available for 
 Windows, Mac and Linux.
 
+> _NB_: for text formatting of keys (bold and italics) you may need to reinstall `graphviz` with `pango` support:
+
+```
+brew reinstall graphviz --with-pangocairo
+```
+
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
 
