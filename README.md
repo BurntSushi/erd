@@ -359,3 +359,21 @@ If you've used `erwiz` before, you'll notice that the format of the `er` file
 is inspired by it. The `er` format is a bit more lightweight, but its general 
 structure is similar.
 
+
+### Docker file
+
+We have a docker file for creating the container where erd can work.
+In addition, we have a shell script named `generate.sh` to generate the image file locally.
+
+`generate.sh` will create a docker container and copy local `er` file to the container.
+After that, the script will generate the image file from copied `er` file in the container.
+Finally, the image file will be copied from the container to local environment and the container will be deleted automatically.
+
+Therefore, by using the script, you can generate an image file from local `er` file without installing any toos locally.
+
+```bash
+# Build image from docker file
+$ docker build . -t erd
+# After creating er file in current directory, you can generate an image file like this
+$  ./generate.sh simple.er simple.png
+```
