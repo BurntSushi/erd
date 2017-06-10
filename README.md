@@ -369,11 +369,25 @@ In addition, we have a shell script named `generate.sh` to generate the image fi
 After that, the script will generate the image file from copied `er` file in the container.
 Finally, the image file will be copied from the container to local environment and the container will be deleted automatically.
 
-Therefore, by using the script, you can generate an image file from local `er` file without installing any toos locally.
+Therefore, by using the script, you can generate an image file from local `er` file without installing any tools locally.
 
 ```bash
 # Build image from docker file
 $ docker build . -t erd
-# After creating er file in current directory, you can generate an image file like this
-$  ./generate.sh simple.er simple.png
+
+# Generate image file
+$  ./generate.sh examples/simple.er examples/simple.png
+```
+
+If you want to generate image file from er files which you created, you can generate like this.
+
+```bash
+# create a directory
+$ mkdir service
+
+# Edit er file
+$ vim service/app.er
+
+# Generate image file
+$ ./generate.sh service/app.er service/app.png
 ```
