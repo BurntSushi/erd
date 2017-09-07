@@ -48,7 +48,7 @@ Before describing the ER file, let's try making an ER diagram from a small
 example:
 
 ```bash
-$ curl 'https://raw.github.com/BurntSushi/erd/master/examples/simple.er' > simple.er
+$ curl 'https://raw.githubusercontent.com/BurntSushi/erd/master/examples/simple.er' > simple.er
 $ cat simple.er
 # Entities are declared in '[' ... ']'. All attributes after the entity header
 # up until the end of the file (or the next entity declaration) correspond
