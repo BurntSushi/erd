@@ -30,7 +30,7 @@ brew reinstall graphviz --with-pango
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
 
-    cabal install erd
+    cabal install --allow-newer erd
 
 Alternatively, you can clone this repository and build from source:
 
