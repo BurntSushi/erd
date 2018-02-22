@@ -20,7 +20,14 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 [GraphViz](http://www.graphviz.org/Download..php). Both are available for
 Windows, Mac and Linux.
 
-[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install
+> _NB OSX users_: for text formatting of keys (bold and italics) you may need to reinstall `graphviz` with `pango` support:
+
+```
+# OSX only
+brew reinstall graphviz --with-pango
+```
+
+[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
 
     cabal install erd
@@ -41,7 +48,7 @@ Before describing the ER file, let's try making an ER diagram from a small
 example:
 
 ```bash
-$ curl 'https://raw.github.com/BurntSushi/erd/master/examples/simple.er' > simple.er
+$ curl 'https://raw.githubusercontent.com/BurntSushi/erd/master/examples/simple.er' > simple.er
 $ cat simple.er
 # Entities are declared in '[' ... ']'. All attributes after the entity header
 # up until the end of the file (or the next entity declaration) correspond
