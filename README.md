@@ -16,9 +16,27 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 ### Installation
 
-`erd` requires [Haskell](http://www.haskell.org/platform/) and
-[GraphViz](http://www.graphviz.org/Download..php). Both are available for 
-Windows, Mac and Linux.
+`erd` requires [GraphViz](http://www.graphviz.org/download/), and one of:
+
+* [Stack](http://docs.haskellstack.org/en/stable/README/)
+* [Haskell Platform](http://www.haskell.org/platform/)
+
+All of these are available for Windows, Mac and Linux.
+
+#### Stack
+
+Install the [Stack](http://docs.haskellstack.org/en/stable/README/) build tool,
+and build from source:
+
+    git clone git://github.com/BurntSushi/erd
+    cd erd
+    stack install
+
+`stack install` will put the binary into Stack's standard binary
+installation path.  Unless you've overriden it, that's `~/.local/bin`
+on Unix and OS X, `%APPDATA%\local\bin` on Windows.
+
+#### Haskell Platform
 
 > _NB OSX users_: for text formatting of keys (bold and italics) you may need to reinstall `graphviz` with `pango` support:
 
