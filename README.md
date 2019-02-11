@@ -16,7 +16,7 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 ### Installation
 
-`erd` requires [GraphViz](http://www.graphviz.org/Download..php), and one of:
+`erd` requires [GraphViz](http://www.graphviz.org/download/), and one of:
 
 * [Stack](http://docs.haskellstack.org/en/stable/README/)
 * [Haskell Platform](http://www.haskell.org/platform/)
