@@ -15,6 +15,7 @@ import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.GraphViz.Attributes.HTML as H
 import qualified Data.GraphViz.Types.Generalised as G
 import Data.GraphViz.Types.Monadic
+import Data.GraphViz.Commands (isGraphvizInstalled)
 
 import Config
 import ER
@@ -22,6 +23,7 @@ import Parse
 
 main :: IO ()
 main = do
+  checkRequirements -- application may terminate here
   conf <- configIO
   er' <- uncurry loadER (cin conf)
   case er' of
@@ -103,3 +105,13 @@ graphTitle topts =
        , A.LabelLoc A.VTop
        , A.Label $ A.HtmlLabel $ H.Text $ htmlFont topts (head glabel)
        ]
+
+checkRequirements :: IO ()
+checkRequirements = do
+  x <- isGraphvizInstalled
+  case x of
+    False ->
+      quitWithoutGraphviz $
+        "GraphViz is not installed on your system.\n" ++
+        "Please install it first, https://github.com/BurntSushi/erd"
+    _     -> return ()
