@@ -7,7 +7,7 @@ where
 import Prelude hiding (null)
 
 import Control.Monad (liftM2, when, void)
-import Data.Char (isAlphaNum, isSpace)
+import Data.Char (isAlphaNum, isSpace, isControl)
 import Data.List (find)
 import qualified Data.Map as M
 import Data.Maybe
@@ -186,10 +186,24 @@ comment = do
 ident :: Parser Text
 ident = do
   spacesNoNew
+  n <- identQuoted <|> identNoSpace
+  spacesNoNew
+  return n
+
+identQuoted :: Parser Text
+identQuoted = do
+  quote <- oneOf "'\"`"
+  let p = satisfy (\c -> c /= quote && not (isControl c) )
+            <?> "any character except " ++ [quote] ++ " or control characters"
+  n <- fmap pack (many1 p)
+  char quote
+  return n
+
+identNoSpace :: Parser Text
+identNoSpace = do
   let p = satisfy (\c -> c == '_' || isAlphaNum c)
             <?> "letter, digit or underscore"
   n <- fmap pack (many1 p)
-  spacesNoNew
   return n
 
 emptiness :: Parser ()
