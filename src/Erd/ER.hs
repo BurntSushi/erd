@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module ER
+module Erd.ER
   ( ER(..)
   , Entity(..)
   , Attribute(..)
@@ -175,7 +175,7 @@ defaultTitleOpts = M.fromList
 -- | Hard-coded default options for all entity headers.
 defaultHeaderOpts :: Options
 defaultHeaderOpts = M.fromList
-  [ ("size", ER.FontSize 16)
+  [ ("size", FontSize 16)
   ]
 
 -- | Hard-coded default options for all entities.

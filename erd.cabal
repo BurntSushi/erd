@@ -62,12 +62,37 @@ source-repository head
   location: git://github.com/BurntSushi/erd.git
 
 executable erd
-  hs-source-dirs: src
+  hs-source-dirs: app, src
+  other-modules:
+      Erd.Config
+      Erd.ER
+      Erd.Parse
+      Text.Parsec.Erd.Parser
   main-is: Main.hs
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
-  other-modules: Config, ER, Parse
   build-depends:
-    base >= 4.5 && < 5
+      base >=4.5 && <5
+      , graphviz == 2999.*
+      , text == 1.*
+      , parsec == 3.1.*
+      , containers == 0.5.*
+      , bytestring == 0.10.*
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  hs-source-dirs:
+      test, src
+  other-modules:
+      Erd.Config
+      Erd.ER
+      Erd.Parse
+      Text.Parsec.Erd.Parser
+  build-depends:
+      QuickCheck
+    , hspec
+    , base >=4.5 && <5
     , graphviz == 2999.*
     , text == 1.*
     , parsec == 3.1.*
