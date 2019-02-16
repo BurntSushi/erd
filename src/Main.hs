@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 
-import Control.Monad (forM_)
+import Control.Applicative ((<|>))
+import Control.Monad (forM_, guard)
 import qualified Data.ByteString as SB
 import Data.Maybe (fromMaybe)
 import qualified Data.Text.Lazy as L
@@ -107,11 +108,7 @@ graphTitle topts =
        ]
 
 checkRequirements :: IO ()
-checkRequirements = do
-  x <- isGraphvizInstalled
-  case x of
-    False ->
-      quitWithoutGraphviz $
-        "GraphViz is not installed on your system.\n" ++
-        "Please install it first, https://github.com/BurntSushi/erd"
-    _     -> return ()
+checkRequirements = (isGraphvizInstalled >>= guard) <|> quitWithoutGraphviz msg
+  where
+    msg = "GraphViz is not installed on your system.\n" ++
+          "Please install it first, https://github.com/BurntSushi/erd"
