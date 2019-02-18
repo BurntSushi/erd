@@ -13,7 +13,7 @@ labels: WIP
 
 issue : #
 
-assign to : @
+reviewers : @
 
 
 Please mention @ zhujinxuan when your PR is finished, then he will remove the WIP label.
