@@ -42,7 +42,7 @@ on Unix and OS X, `%APPDATA%\local\bin` on Windows.
 
 ```
 # OSX only
-brew reinstall graphviz --with-pango
+brew install graphviz
 ```
 
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
