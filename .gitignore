@@ -4,3 +4,4 @@ dist
 bin
 tags
 .stack-work
+dist-newstyle/
