@@ -54,8 +54,8 @@ Alternatively, you can clone this repository and build from source:
 
     git clone git://github.com/BurntSushi/erd
     cd erd
-    cabal configure
-    cabal build
+    cabal new-configure
+    cabal new-build
     # binary is now at ./dist/build/erd/erd
 
 Usage information is available with `erd --help`.
