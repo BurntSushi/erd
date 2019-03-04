@@ -10,7 +10,7 @@ module Erd.ER
   )
 where
 
-import qualified Data.Map.Strict as M
+import qualified Data.Map as M
 import Data.Maybe (mapMaybe)
 import Data.Text.Lazy
 import Data.Word (Word8)
