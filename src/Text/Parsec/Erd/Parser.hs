@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings#-}
 module Text.Parsec.Erd.Parser
   (
     AST(..),
@@ -26,14 +26,14 @@ import Erd.ER
 data AST = E Entity
          | A Attribute
          | R Relation
-         deriving Show
+         deriving (Show, Eq)
 
 data GlobalOptions = GlobalOptions { gtoptions :: Options
                                    , ghoptions :: Options
                                    , geoptions :: Options
                                    , groptions :: Options
                                    }
-                     deriving Show
+                     deriving (Show, Eq)
 
 emptyGlobalOptions :: GlobalOptions
 emptyGlobalOptions = GlobalOptions M.empty M.empty M.empty M.empty

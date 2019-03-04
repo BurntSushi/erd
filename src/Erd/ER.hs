@@ -10,7 +10,7 @@ module Erd.ER
   )
 where
 
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import Data.Maybe (mapMaybe)
 import Data.Text.Lazy
 import Data.Word (Word8)
@@ -25,7 +25,7 @@ data ER = ER { entities :: [Entity]
              , rels :: [Relation]
              , title :: Options
              }
-          deriving Show
+          deriving (Show, Eq)
 
 -- | Represents a single entity in a schema.
 data Entity = Entity { name :: Text
@@ -33,10 +33,7 @@ data Entity = Entity { name :: Text
                      , hoptions :: Options
                      , eoptions :: Options
                      }
-              deriving Show
-
-instance Eq Entity where
-  e1 == e2 = name e1 == name e2
+              deriving (Show, Eq)
 
 instance Ord Entity where
   e1 `compare` e2 = name e1 `compare` name e2
@@ -47,10 +44,7 @@ data Attribute = Attribute { field :: Text
                            , fk :: Bool
                            , aoptions :: Options
                            }
-                 deriving Show
-
-instance Eq Attribute where
-  a1 == a2 = field a1 == field a2
+                 deriving (Show, Eq)
 
 instance Ord Attribute where
   a1 `compare` a2 = field a1 `compare` field a2
@@ -85,7 +79,7 @@ data Option = Label String
             | CellSpacing Word8
             | CellBorder Word8
             | CellPadding Word8
-            deriving Show
+            deriving (Show, Eq)
 
 -- | Given an option name and a string representation of its value,
 -- `optionByName` will attempt to parse the string as a value corresponding
@@ -145,12 +139,12 @@ data Relation = Relation { entity1, entity2 :: Text
                          , card1,   card2   :: Cardinality
                          , roptions :: Options
                          }
-                deriving Show
+                deriving (Show, Eq)
 
 data Cardinality = ZeroOne
                  | One
                  | ZeroPlus
-                 | OnePlus
+                 | OnePlus deriving (Eq)
 
 instance Show Cardinality where
   show ZeroOne = "{0,1}"
