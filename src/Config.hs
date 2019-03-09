@@ -133,13 +133,10 @@ edges :: M.Map String (Maybe A.EdgeType)
 edges = M.fromList
   [ ("spline", Just A.SplineEdges)
   , ("ortho", Just A.Ortho)
-  , ("line", Just A.LineEdges)
   , ("noedge", Just A.NoEdges)
   , ("poly", Just A.PolyLine)
-  , ("curved", Just A.Curved)
   , ("compound", Just A.CompoundEdge)
   ]
-
 
 -- | takeExtension returns the last extension from a file path, or the
 -- empty string if no extension was found. e.g., the extension of
