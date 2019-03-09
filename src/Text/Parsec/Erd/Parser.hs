@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings#-}
+{-# LANGUAGE OverloadedStrings #-}
 module Text.Parsec.Erd.Parser
   (
     AST(..),
