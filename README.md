@@ -138,7 +138,7 @@ if quoted with backticks, simple quotes or double quotes:
 ```
 
 Any number of attributes may be declared as a primary key for its entity by
-prefixing the attribute with a `\*`. Similarly, an attribute may be declared
+prefixing the attribute with a `*`. Similarly, an attribute may be declared
 as a foreign key by prefixing the attribute with a `+`:
 
 ```
@@ -148,7 +148,7 @@ as a foreign key by prefixing the attribute with a `+`:
 ```
 
 An attribute may be *both* a primary key and a foreign key by prefixing the
-name with a `\*` and a `+` in any order. Note that primary keys are underlined
+name with a `*` and a `+` in any order. Note that primary keys are underlined
 while foreign keys are italicized.
 
 Relationships can also be declared *anywhere in an ER file*. Every relationship
