@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/BurntSushi/erd.svg?branch=master)](https://travis-ci.org/BurntSushi/erd)
+
 This utility takes a plain text description of entities, their attributes and
 the relationships between entities and produces a visual diagram modeling the
 description. The visualization is produced by using Dot with GraphViz. There
