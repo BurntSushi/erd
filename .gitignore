@@ -4,4 +4,6 @@ dist
 bin
 tags
 .stack-work
-dist-newstyle/
+dist-newstyle
+examples/*.dot
+examples/*.pdf

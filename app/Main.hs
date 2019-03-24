@@ -18,9 +18,11 @@ import qualified Data.GraphViz.Types.Generalised as G
 import Data.GraphViz.Types.Monadic
 import Data.GraphViz.Commands (isGraphvizInstalled)
 
-import Config
-import ER
-import Parse
+import qualified Erd.ER as ER
+
+import Erd.Config
+import Erd.ER
+import Erd.Parse
 
 main :: IO ()
 main = do

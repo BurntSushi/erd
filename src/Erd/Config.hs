@@ -1,4 +1,4 @@
-module Config
+module Erd.Config
   ( Config(..)
   , configIO
   )
