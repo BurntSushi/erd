@@ -57,6 +57,9 @@ description:
   See the <https://github.com/BurntSushi/erd#readme README.md> file for more
   examples and instructions on how to write ER files.
 
+extra-source-files:
+    changelog.md
+
 source-repository head
   type: git
   location: git://github.com/BurntSushi/erd.git
