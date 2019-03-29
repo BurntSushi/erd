@@ -35,7 +35,7 @@ and build from source:
     stack install
 
 `stack install` will put the binary into Stack's standard binary
-installation path.  Unless you've overriden it, that's `~/.local/bin`
+installation path.  Unless you've overridden it, that's `~/.local/bin`
 on Unix and OS X, `%APPDATA%\local\bin` on Windows.
 
 #### Haskell Platform
