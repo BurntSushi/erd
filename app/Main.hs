@@ -81,8 +81,9 @@ htmlAttr a = H.Cells [cell]
         name = fkfmt $ pkfmt $ htmlFont opts (field a)
         pkfmt s = if pk a then [H.Format H.Underline s] else s
         fkfmt s = if fk a then [H.Format H.Italics s] else s
-        cellAttrs = H.Align H.HLeft : optionsTo optToHtml opts
+        cellAttrs = H.Align H.HRight : renderPortname a : optionsTo optToHtml opts
         opts = aoptions a
+        renderPortname = H.Port . A.PN . field
 
 -- | Formats HTML text with a label. The format string given should be
 -- in `Data.Text.printf` style. (Only font options are used from the options
