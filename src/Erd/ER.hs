@@ -18,6 +18,7 @@ import Text.Printf (printf)
 
 import Data.GraphViz.Parsing (ParseDot, parse, runParser)
 import qualified Data.GraphViz.Attributes.HTML as H
+import qualified Data.GraphViz.Attributes.Complete as C
 import Data.GraphViz.Attributes.Colors (Color)
 
 -- | Represents a single schema.
@@ -79,6 +80,7 @@ data Option = Label String
             | CellSpacing Word8
             | CellBorder Word8
             | CellPadding Word8
+            | EdgePort Text
             deriving (Show, Eq)
 
 -- | Given an option name and a string representation of its value,
@@ -122,6 +124,7 @@ optToHtml (BorderColor c) = Just $ H.Color c
 optToHtml (CellSpacing w) = Just $ H.CellSpacing w
 optToHtml (CellBorder w) = Just $ H.CellBorder w
 optToHtml (CellPadding w) = Just $ H.CellPadding w
+optToHtml (EdgePort p) = Just $ H.Port $ C.PN p
 optToHtml _ = Nothing
 
 -- | Selects an option if and only if it corresponds to a label.

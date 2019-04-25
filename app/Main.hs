@@ -5,6 +5,7 @@ import Control.Applicative ((<|>))
 import Control.Monad (forM_, guard)
 import qualified Data.ByteString as SB
 import Data.Maybe (fromMaybe)
+import qualified Data.Map as Map (insert)
 import qualified Data.Text.Lazy as L
 import System.Exit (exitFailure)
 import System.IO (hClose, hPutStrLn, stderr)
@@ -82,7 +83,8 @@ htmlAttr a = H.Cells [cell]
         pkfmt s = if pk a then [H.Format H.Underline s] else s
         fkfmt s = if fk a then [H.Format H.Italics s] else s
         cellAttrs = H.Align H.HLeft : optionsTo optToHtml opts
-        opts = aoptions a
+        opts = Map.insert "port" (renderPortname a) $ aoptions a
+        renderPortname = EdgePort . field
 
 -- | Formats HTML text with a label. The format string given should be
 -- in `Data.Text.printf` style. (Only font options are used from the options
