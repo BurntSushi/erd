@@ -79,7 +79,7 @@ executable erd
       , graphviz == 2999.*
       , text == 1.*
       , parsec == 3.1.*
-      , containers == 0.5.*
+      , containers == 0.6.*
       , bytestring == 0.10.*
 
 test-suite spec
@@ -103,7 +103,7 @@ test-suite spec
     , graphviz == 2999.*
     , text == 1.*
     , parsec == 3.1.*
-    , containers == 0.5.*
+    , containers == 0.6.*
     , bytestring == 0.10.*
     , tasty >= 0.11
     , tasty-hunit >= 0.9
