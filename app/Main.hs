@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
+module Main
+  (main)
+where
 
 import Control.Applicative ((<|>))
 import Control.Monad (forM_, guard)
@@ -8,7 +10,6 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Text.Lazy as L
 import System.Exit (exitFailure)
 import System.IO (hClose, hPutStrLn, stderr)
-import Text.Printf (printf)
 
 import Data.GraphViz
 import qualified Data.GraphViz.Attributes.Colors.X11 as C
@@ -18,11 +19,10 @@ import qualified Data.GraphViz.Types.Generalised as G
 import Data.GraphViz.Types.Monadic
 import Data.GraphViz.Commands (isGraphvizInstalled)
 
-import qualified Erd.ER as ER
-
 import Erd.Config
 import Erd.ER
 import Erd.Parse
+import Erd.Render (htmlAttr, htmlFont, withLabelFmt)
 
 main :: IO ()
 main = do
@@ -73,32 +73,6 @@ htmlEntity e = H.Table H.HTable
         text = withLabelFmt " [%s]" (hoptions e) $ bold hname
         hname = htmlFont (hoptions e) (name e)
         bold s = [H.Format H.Bold s]
-
--- | Converts a single attribute to an HTML table row.
-htmlAttr :: ER.Attribute -> H.Row
-htmlAttr a = H.Cells [cell]
-  where cell    = H.LabelCell cellAttrs (H.Text $ withLabelFmt " [%s]" opts name)
-        name    = fkfmt $ pkfmt $ htmlFont opts (field a)
-        pkfmt s = if pk a then [H.Format H.Underline s] else s
-        fkfmt s = if fk a then [H.Format H.Italics s] else s
-        cellAttrs = H.Align H.HRight : renderPortname a : optionsTo optToHtml opts
-        opts    = aoptions a
-        renderPortname = H.Port . A.PN . defPortname . field
-        defPortname    = L.toLower . L.replace " " "_"
-
--- | Formats HTML text with a label. The format string given should be
--- in `Data.Text.printf` style. (Only font options are used from the options
--- given.)
-withLabelFmt :: String -> Options -> H.Text -> H.Text
-withLabelFmt fmt opts s =
-  case optionsTo optToLabel opts of
-    (x:_) -> s ++ htmlFont opts (L.pack $ printf fmt $ L.unpack x)
-    _ -> s
-
--- | Formats an arbitrary string with the options given (using only font
--- attributes).
-htmlFont :: Options -> L.Text -> H.Text
-htmlFont opts s = [H.Font (optionsTo optToFont opts) [H.Str s]]
 
 -- | Extracts and formats a graph title from the options given.
 -- The options should be title options from an ER value.

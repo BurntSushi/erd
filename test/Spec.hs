@@ -1,9 +1,14 @@
-module Main (main) where
-import Test.Tasty
-import Test.Text.Parsec.Erd.Parser (testEr)
+module Main
+  (main)
+where
+
+import           Test.Erd.Render             (testRender)
+import           Test.Tasty
+import           Test.Text.Parsec.Erd.Parser (testEr)
 
 main :: IO ()
-main = defaultMain $ testGroup "Erd Tests"  tests
+main = defaultMain $ testGroup "Erd Tests" tests
 
 tests :: [TestTree]
-tests = [testEr]
+tests = [testEr,
+         testRender]
