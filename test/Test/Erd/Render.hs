@@ -16,7 +16,8 @@ import qualified Data.Map as M
 testRender :: TestTree
 testRender = testGroup "Test of main-module" [
   testCase "Transform Erd field-attribute to HTML of GraphViz." test01
-                                                 ]
+  ]
+
 test01 :: Assertion
 test01 = result @?= expected
   where

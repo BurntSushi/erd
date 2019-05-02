@@ -3,26 +3,28 @@ module Main
   (main)
 where
 
-import Control.Applicative ((<|>))
-import Control.Monad (forM_, guard)
-import qualified Data.ByteString as SB
-import Data.Maybe (fromMaybe)
-import qualified Data.Text.Lazy as L
-import System.Exit (exitFailure)
-import System.IO (hClose, hPutStrLn, stderr)
+import           Control.Applicative                 ((<|>))
+import           Control.Monad                       (forM_, guard)
+import qualified Data.ByteString                     as SB
+import           Data.Maybe                          (fromMaybe)
+import qualified Data.Text.Lazy                      as L
+import           System.Exit                         (exitFailure)
+import           System.IO                           (hClose, hPutStrLn, stderr)
 
-import Data.GraphViz
+import           Data.GraphViz
+import qualified Data.GraphViz.Attributes            as A
 import qualified Data.GraphViz.Attributes.Colors.X11 as C
-import qualified Data.GraphViz.Attributes.Complete as A
-import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.GraphViz.Types.Generalised as G
-import Data.GraphViz.Types.Monadic
-import Data.GraphViz.Commands (isGraphvizInstalled)
+import qualified Data.GraphViz.Attributes.Complete   as A
+import qualified Data.GraphViz.Attributes.HTML       as H
+import           Data.GraphViz.Commands              (isGraphvizInstalled)
+import qualified Data.GraphViz.Types.Generalised     as G
+import           Data.GraphViz.Types.Monadic
 
-import Erd.Config
-import Erd.ER
-import Erd.Parse
-import Erd.Render (htmlAttr, htmlFont, withLabelFmt)
+import           Erd.Config
+import           Erd.ER
+import           Erd.Parse
+import           Erd.Render                          (htmlAttr, htmlFont,
+                                                      withLabelFmt)
 
 main :: IO ()
 main = do
@@ -54,12 +56,38 @@ dotER conf er = graph' $ do
             ]
   forM_ (entities er) $ \e ->
     node (name e) [toLabel (htmlEntity e)]
-  forM_ (rels er) $ \r -> do
-    let opts = roptions r
-    let rlab = A.HtmlLabel . H.Text . htmlFont opts . L.pack . show
-    let (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
-    let label = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " opts []
-    edge (entity1 r) (entity2 r) [label, l1, l2]
+  forM_ (rels er) renderEdge
+
+-- | Renders the edges between nodes. When available edges terminate
+-- appropriately to matching fields. In order to have edge-porting properly
+-- working, field and table-name need be aligned.
+renderEdge :: Relation -> Dot L.Text
+renderEdge r = drawEdge labelOfEdge r
+  where
+    labelOfEdge :: (A.Attribute, A.Attribute)
+    labelOfEdge = (A.HeadLabel . rlab r . card2 $ r,
+                   A.TailLabel . rlab r . card1 $ r)
+
+    rlab :: Show a => Relation -> a -> A.Label
+    rlab x = A.HtmlLabel . H.Text . htmlFont (roptions x) . L.pack . show
+
+drawEdge :: (A.Attribute, A.Attribute) -> Relation -> Dot L.Text
+drawEdge l r = edge (entity1 r) (entity2 r) ([label, fst l, snd l] <> edgeOf r)
+  where
+    label = A.Label . A.HtmlLabel . H.Text $ withLabelFmt " %s " (roptions r) []
+
+edgeOf :: Relation -> A.Attributes
+edgeOf r
+  | card1 r == ZeroOne || card1 r == One =
+      [A.TailPort $ A.LabelledPort portId Nothing,
+       A.HeadPort $ A.LabelledPort (portnameOn entity1) Nothing]
+  | otherwise =
+      [A.TailPort $ A.LabelledPort (portnameOn entity2) Nothing,
+       A.HeadPort $ A.LabelledPort portId Nothing]
+  where
+    portnameOn fn = A.PN $ (L.toLower . L.replace " " "_" $ fn r) <> "_" <> termId
+    portId        = A.PN termId
+    termId        = "id"
 
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
