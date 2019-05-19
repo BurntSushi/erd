@@ -70,6 +70,7 @@ executable erd
       Erd.Config
       Erd.ER
       Erd.Parse
+      Erd.Render
       Text.Parsec.Erd.Parser
   main-is: Main.hs
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
@@ -91,7 +92,9 @@ test-suite spec
       Erd.Config
       Erd.ER
       Erd.Parse
+      Erd.Render
       Text.Parsec.Erd.Parser
+      Test.Erd.Render
       Test.Text.Parsec.Erd.Parser
   build-depends:
       QuickCheck
