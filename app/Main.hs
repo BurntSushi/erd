@@ -3,13 +3,13 @@ module Main
   (main)
 where
 
-import           Control.Applicative                 ((<|>))
-import           Control.Monad                       (forM_, guard)
-import qualified Data.ByteString                     as SB
-import           Data.Maybe                          (fromMaybe)
-import qualified Data.Text.Lazy                      as L
-import           System.Exit                         (exitFailure)
-import           System.IO                           (hClose, hPutStrLn, stderr)
+import Control.Applicative ((<|>))
+import Control.Monad (forM_, guard)
+import qualified Data.ByteString as SB
+import Data.Maybe (fromMaybe)
+import qualified Data.Text.Lazy as L
+import System.Exit (exitFailure)
+import System.IO (hClose, hPutStrLn, stderr)
 
 import           Data.GraphViz
 import qualified Data.GraphViz.Attributes            as A
@@ -20,11 +20,10 @@ import           Data.GraphViz.Commands              (isGraphvizInstalled)
 import qualified Data.GraphViz.Types.Generalised     as G
 import           Data.GraphViz.Types.Monadic
 
-import           Erd.Config
-import           Erd.ER
-import           Erd.Parse
-import           Erd.Render                          (htmlAttr, htmlFont,
-                                                      withLabelFmt)
+import Erd.Config
+import Erd.ER
+import Erd.Parse
+import Erd.Render (htmlAttr, htmlFont, withLabelFmt)
 
 main :: IO ()
 main = do

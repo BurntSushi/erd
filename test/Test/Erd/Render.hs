@@ -4,14 +4,14 @@ module Test.Erd.Render
   (testRender)
 where
 
-import qualified Erd.ER as ER
-import Erd.Render (htmlAttr)
+import qualified Erd.ER                        as ER
+import           Erd.Render                    (htmlAttr)
 
-import Test.Tasty
-import Test.Tasty.HUnit
 import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.Map as M
+import qualified Data.Map                      as M
+import           Test.Tasty
+import           Test.Tasty.HUnit
 
 testRender :: TestTree
 testRender = testGroup "Test of main-module" [
