@@ -37,13 +37,13 @@ toER gopts = toER' (ER [] [] title)
 
         toER' :: ER -> [AST] -> Either String ER
         toER' er [] = Right (reversed er) >>= validRels
-        toER' (ER { entities = [] }) (A a:_) =
+        toER' ER { entities = [] } (A a:_) =
           let name = show (field a)
            in Left $ printf "Attribute '%s' comes before first entity." name
-        toER' er@(ER { entities = e':es }) (A a:xs) = do
+        toER' er@ER { entities = e':es } (A a:xs) = do
           let e = e' { attribs = a:attribs e' }
           toER' (er { entities = e:es }) xs
-        toER' er@(ER { entities = es }) (E e:xs) = do
+        toER' er@ER { entities = es } (E e:xs) = do
           let opts = eoptions e
                      `mergeOpts` geoptions gopts
                      `mergeOpts` defaultEntityOpts
@@ -51,14 +51,14 @@ toER gopts = toER' (ER [] [] title)
                       `mergeOpts` ghoptions gopts
                       `mergeOpts` defaultHeaderOpts
           toER' (er { entities = e { eoptions = opts, hoptions = hopts }:es}) xs
-        toER' er@(ER { rels = rs }) (R r:xs) = do
+        toER' er@ER { rels = rs } (R r:xs) = do
           let opts = roptions r
                      `mergeOpts` groptions gopts
                      `mergeOpts` defaultRelOpts
           toER' (er { rels = r { roptions = opts }:rs }) xs
 
         reversed :: ER -> ER
-        reversed er@(ER { entities = es, rels = rs }) =
+        reversed er@ER { entities = es, rels = rs } =
           let es' = map (\e -> e { attribs = reverse (attribs e) }) es
           in  er { entities = reverse es', rels = reverse rs }
 
