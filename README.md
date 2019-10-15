@@ -63,6 +63,14 @@ Alternatively, you can clone this repository and build from source:
 
 Usage information is available with `erd --help`.
 
+### Building statically linked executable
+
+In case one wishes to have a statically linked `erd` as a result, this is
+possible to have by executing `build-static_by-nix.sh`: which requires the
+[nix](https://nixos.org/nix/) package manager to be installed on the building
+machine. NixOS itself is not a requirement.
+
+
 ### Quick example
 
 Before describing the ER file, let's try making an ER diagram from a small
