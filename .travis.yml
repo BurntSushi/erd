@@ -1,0 +1,42 @@
+language: generic
+sudo: false
+
+# Caching so the next build will be fast too.
+cache:
+  directories:
+    - $HOME/.ghc
+    - $HOME/.cabal
+    - $HOME/.stack
+    - $TRAVIS_BUILD_DIR/.stack-work
+
+
+before_install:
+  # Download and unpack the stack executable
+  - mkdir -p ~/.local/bin
+  - export PATH=$HOME/.local/bin:$PATH
+  - travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+
+matrix:
+  include:
+  - env: BUILD=stack GHCVER=8.4.3 STACK_YAML=stack.yaml
+    compiler: ": #stack 8.4.3"
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - ghc-8.4.3
+  - env: LINT=hlint
+  allow_failures:
+  - env: LINT=hlint
+
+script:
+  - |
+    set -ex
+    if [[ $LINT == 'hlint' ]]; then 
+      curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s . 
+    else
+      stack setup
+      stack --no-terminal test
+    fi
+    set +ex

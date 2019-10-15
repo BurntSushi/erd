@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                erd
-version:             0.1.3.0
+version:             0.2.0.0
 homepage:            https://github.com/BurntSushi/erd
 license:             PublicDomain
 license-file:        UNLICENSE
@@ -10,7 +10,8 @@ author:              Andrew Gallant
 maintainer:          jamslam@gmail.com
 category:            Database, Development
 build-type:          Simple
-cabal-version:       >=1.8
+cabal-version:       >=1.10
+
 synopsis:
   An entity-relationship diagram generator from a plain text description.
 description:
@@ -21,7 +22,7 @@ description:
   .
   A quick example that transforms an `er` file to a PDF:
   .
-  > $ curl 'https://raw.github.com/BurntSushi/erd/master/examples/simple.er' > simple.er
+  > $ curl 'https://raw.githubusercontent.com/BurntSushi/erd/master/examples/simple.er' > simple.er
   > $ cat simple.er
   > # Entities are declared in '[' ... ']'. All attributes after the entity header
   > # up until the end of the file (or the next entity declaration) correspond
@@ -57,19 +58,53 @@ description:
   See the <https://github.com/BurntSushi/erd#readme README.md> file for more
   examples and instructions on how to write ER files.
 
+extra-source-files:
+    changelog.md
+
 source-repository head
   type: git
   location: git://github.com/BurntSushi/erd.git
 
 executable erd
-  hs-source-dirs: src
+  default-language: Haskell2010
+  hs-source-dirs: app, src
+  other-modules:
+      Erd.Config
+      Erd.ER
+      Erd.Parse
+      Erd.Render
+      Text.Parsec.Erd.Parser
   main-is: Main.hs
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
-  other-modules: Config, ER, Parse
-  build-depends:
-    base >= 4.5 && < 5
-    , graphviz == 2999.*
-    , text == 1.*
-    , parsec == 3.1.*
-    , containers == 0.5.*
-    , bytestring == 0.10.*
+  build-depends: base >= 4.5 && <5
+               , graphviz == 2999.*
+               , text == 1.*
+               , parsec == 3.1.*
+               , containers == 0.6.*
+               , bytestring == 0.10.*
+
+
+test-suite spec
+  default-language: Haskell2010
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  hs-source-dirs:
+      test, src
+  other-modules:
+      Erd.Config
+      Erd.ER
+      Erd.Parse
+      Erd.Render
+      Text.Parsec.Erd.Parser
+      Test.Erd.Render
+      Test.Text.Parsec.Erd.Parser
+  build-depends: base >=4.5 && <5
+               , graphviz == 2999.*
+               , text == 1.*
+               , parsec == 3.1.*
+               , containers == 0.6.*
+               , bytestring == 0.10.*
+               , tasty >= 0.11
+               , tasty-hunit >= 0.9
+               , raw-strings-qq >= 1.1
