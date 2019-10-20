@@ -18,6 +18,10 @@ before_install:
 
 matrix:
   include:
+
+  - env: BUILD=stack ARGS=""
+    compiler: ": #stack default"
+
   - env: BUILD=stack GHCVER=8.4.3 STACK_YAML=stack.yaml
     compiler: ": #stack 8.4.3"
     addons:
