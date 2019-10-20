@@ -1,9 +1,7 @@
-resolver: lts-13.11
+resolver: lts-14.10
 
 packages:
 - '.'
-
-extra-deps: [graphviz-2999.20.0.3]
 
 flags: {}
 
