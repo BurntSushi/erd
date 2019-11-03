@@ -3,26 +3,27 @@ module Main
   (main)
 where
 
-import Control.Applicative ((<|>))
-import Control.Monad (forM_, guard)
-import qualified Data.ByteString as SB
-import Data.Maybe (fromMaybe)
-import qualified Data.Text.Lazy as L
-import System.Exit (exitFailure)
-import System.IO (hClose, hPutStrLn, stderr)
+import           Control.Applicative                 ((<|>))
+import           Control.Monad                       (forM_, guard)
+import qualified Data.ByteString                     as SB
+import           Data.Maybe                          (fromJust, fromMaybe)
+import qualified Data.Text.Lazy                      as L
+import           System.Exit                         (exitFailure)
+import           System.IO                           (hClose, hPutStrLn, stderr)
 
-import Data.GraphViz
+import           Data.GraphViz
 import qualified Data.GraphViz.Attributes.Colors.X11 as C
-import qualified Data.GraphViz.Attributes.Complete as A
-import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.GraphViz.Types.Generalised as G
-import Data.GraphViz.Types.Monadic
-import Data.GraphViz.Commands (isGraphvizInstalled)
+import qualified Data.GraphViz.Attributes.Complete   as A
+import qualified Data.GraphViz.Attributes.HTML       as H
+import           Data.GraphViz.Commands              (isGraphvizInstalled)
+import qualified Data.GraphViz.Types.Generalised     as G
+import           Data.GraphViz.Types.Monadic
 
-import Erd.Config
-import Erd.ER
-import Erd.Parse
-import Erd.Render (htmlAttr, htmlFont, withLabelFmt)
+import           Erd.Config
+import           Erd.ER
+import           Erd.Parse
+import           Erd.Render                          (htmlAttr, htmlFont,
+                                                      withLabelFmt)
 
 main :: IO ()
 main = do
@@ -45,7 +46,7 @@ dotER :: Config -> ER -> G.DotGraph L.Text
 dotER conf er = graph' $ do
   graphAttrs (graphTitle $ title er)
   graphAttrs [ A.RankDir A.FromLeft
-             , A.Splines (edgeType conf)
+             , A.Splines $ fromMaybe (fromJust . edgeType $ defaultConfig) (edgeType conf)
              ]
   nodeAttrs [shape PlainText] -- recommended for HTML labels
   edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
