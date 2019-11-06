@@ -20,7 +20,7 @@ test01 :: Assertion
 test01 = result @?= expected
   where
     inputF   = "Field"
-    input    = ER.Attribute inputF True False M.empty
+    input    = ER.Attribute inputF True False ER.defaultAttrOpts
     result   = htmlAttr input
     expected = H.Cells [H.LabelCell [H.Align H.HRight]
                         (H.Text [H.Format H.Underline [H.Font [] [H.Str inputF]]])]

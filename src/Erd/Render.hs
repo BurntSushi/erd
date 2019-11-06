@@ -19,8 +19,8 @@ htmlAttr a = H.Cells [cell]
         name    = fkfmt $ pkfmt $ htmlFont opts (ER.field a)
         pkfmt s = if ER.pk a then [H.Format H.Underline s] else s
         fkfmt s = if ER.fk a then [H.Format H.Italics s] else s
-        cellAttrs = H.Align H.HRight : ER.optionsTo ER.optToHtml opts
         opts    = ER.aoptions a
+        cellAttrs = ER.optionsTo ER.optToHtml opts
 
 -- | Formats an arbitrary string with the options given (using only font
 -- attributes).
