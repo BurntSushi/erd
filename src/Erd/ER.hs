@@ -6,7 +6,7 @@ module Erd.ER
   , Options, mergeOpts, optionsTo
   , Option(..), optionByName, optToFont, optToHtml, optToLabel
   , Relation(..) , Cardinality(..), cardByName
-  , defaultTitleOpts, defaultEntityOpts, defaultHeaderOpts, defaultRelOpts
+  , defaultAttrOpts, defaultTitleOpts, defaultEntityOpts, defaultHeaderOpts, defaultRelOpts
   )
 where
 
@@ -79,6 +79,7 @@ data Option = Label String
             | CellSpacing Word8
             | CellBorder Word8
             | CellPadding Word8
+            | TextAlignment H.Align
             deriving (Show, Eq)
 
 -- | Given an option name and a string representation of its value,
@@ -96,6 +97,7 @@ optionByName "border-color" = optionParse BorderColor
 optionByName "cellspacing" = optionParse CellSpacing
 optionByName "cellborder" = optionParse CellBorder
 optionByName "cellpadding" = optionParse CellPadding
+optionByName "text-alignment" = optionParse TextAlignment
 optionByName unk = const (Left $ printf "Option '%s' does not exist." unk)
 
 -- | A wrapper around the GraphViz's parser for any particular option.
@@ -116,13 +118,15 @@ optToFont _ = Nothing
 -- | Selects an option if and only if it corresponds to an HTML attribute.
 -- In particular, for tables or table cells.
 optToHtml :: Option -> Maybe H.Attribute
-optToHtml (BgColor c) = Just $ H.BGColor c
-optToHtml (Border w) = Just $ H.Border w
-optToHtml (BorderColor c) = Just $ H.Color c
-optToHtml (CellSpacing w) = Just $ H.CellSpacing w
-optToHtml (CellBorder w) = Just $ H.CellBorder w
-optToHtml (CellPadding w) = Just $ H.CellPadding w
-optToHtml _ = Nothing
+optToHtml (BgColor c)       = pure $ H.BGColor c
+optToHtml (Border w)        = pure $ H.Border w
+optToHtml (BorderColor c)   = pure $ H.Color c
+optToHtml (CellSpacing w)   = pure $ H.CellSpacing w
+optToHtml (CellBorder w)    = pure $ H.CellBorder w
+optToHtml (CellPadding w)   = pure $ H.CellPadding w
+optToHtml (TextAlignment x) = pure $ H.Align x
+optToHtml _                 = Nothing
+
 
 -- | Selects an option if and only if it corresponds to a label.
 optToLabel :: Option -> Maybe Text
@@ -185,3 +189,8 @@ defaultEntityOpts = M.fromList
 -- | Hard-coded default options for all relationships.
 defaultRelOpts :: Options
 defaultRelOpts = M.empty
+
+defaultAttrOpts :: Options
+defaultAttrOpts = M.fromList
+  [ ("text-alignment", TextAlignment H.HRight)
+  ]
