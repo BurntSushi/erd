@@ -1,28 +1,26 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Text.Parsec.Erd.Parser
-  (
-    AST(..),
+  ( AST(..),
     GlobalOptions(..),
     document,
     globalOptions,
     entity,
     rel,
     attr,
-    comment,
-  )
-where
+    comment
+  ) where
 
-import Control.Monad (liftM2, when, void)
-import Data.Char (isAlphaNum, isSpace, isControl)
-import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.Map                      as M
-import Data.Maybe
-import Data.Text.Lazy
-import Text.Parsec
-import Text.Parsec.Text.Lazy
-import Text.Printf (printf)
+import           Erd.ER
 
-import Erd.ER
+import           Control.Monad         (liftM2, void, when)
+import           Data.Char             (isAlphaNum, isControl, isSpace)
+import qualified Data.Map              as M
+import           Data.Maybe
+import           Data.Text.Lazy
+import           Text.Parsec
+import           Text.Parsec.Text.Lazy
+import           Text.Printf           (printf)
 
 data AST = E Entity
          | A Attribute
@@ -68,18 +66,17 @@ attr = do
   eolComment
   return
     $ Just
-    $ A Attribute { field = n, pk = ispk, fk = isfk, aoptions = opts <> defaultAttrOpts}
+    $ A Attribute {field = n, pk = ispk, fk = isfk, aoptions = opts <> defaultAttrOpts}
 
 rel :: Parser (Maybe AST)
 rel = do
   let ops = "?1*+"
   e1 <- ident
   op1 <- oneOf ops
-  string "--"
+  _ <- string "--"
   op2 <- oneOf ops
   e2 <- ident
   opts <- options
-
   let getCard op =
         case cardByName op of
           Just t -> return t
@@ -87,12 +84,12 @@ rel = do
   t1 <- getCard op1
   t2 <- getCard op2
   return $ Just $ R Relation { entity1 = e1, entity2 = e2
-                               , card1 = t1, card2 = t2, roptions = opts }
+                             , card1 = t1, card2 = t2, roptions = opts }
 
 globalOptions :: GlobalOptions -> Parser GlobalOptions
 globalOptions gopts =
   option gopts $ try $ do
-    n <- ident 
+    n <- ident
     opts <- options
     case n of
       "title"        -> emptiness >> globalOptions (gopts { gtoptions = opts})
@@ -111,19 +108,19 @@ options =
 
 opt :: Parser (String, Option)
 opt = do
-  name <- liftM2 (:) letter (manyTill (letter <|> char '-') (char ':'))
+  optName <- liftM2 (:) letter (manyTill (letter <|> char '-') (char ':'))
           <?> "option name"
   emptiness
   value <- between (char '"') (char '"') (many $ noneOf "\"")
            <?> "option value"
-  case optionByName name value of
+  case optionByName optName value of
     Left err -> fail err
-    Right o' -> emptiness >> return (name, o')
+    Right o' -> emptiness >> return (optName, o')
 
 comment :: Parser (Maybe AST)
 comment = do
-  char '#'
-  manyTill anyChar $ try eol
+  _ <- char '#'
+  _ <- manyTill anyChar $ try eol
   return Nothing
 
 ident :: Parser Text
@@ -139,7 +136,7 @@ identQuoted = do
   let p = satisfy (\c -> c /= quote && not (isControl c) )
             <?> "any character except " ++ [quote] ++ " or control characters"
   n <- fmap pack (many1 p)
-  char quote
+  _ <- char quote
   return n
 
 identNoSpace :: Parser Text
