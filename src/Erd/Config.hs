@@ -120,7 +120,7 @@ opts =
       (O.ReqArg (\fpath cIO -> do
                    c <- cIO
                    i <- openFile fpath ReadMode
-                   return $ c { cin = (fpath, i) }
+                   return $ c {cin = (fpath, i)}
                 )
                 "FILE")
       ("When set, input will be read from the given file.\n"
@@ -129,7 +129,7 @@ opts =
       (O.ReqArg (\fpath cIO -> do
                     c <- cIO
                     o <- openFile fpath WriteMode
-                    return $ c { cout = (fpath, o) }
+                    return $ c {cout = (fpath, o)}
                 )
                 "FILE")
       ("When set, output will be written to the given file.\n"
@@ -147,8 +147,7 @@ opts =
                       Nothing -> do
                         ef "'%s' is not a valid output format." fmt
                         exitFailure
-                      Just gfmt ->
-                        return $ c { outfmt = Just gfmt }
+                      Just gfmt -> return c {outfmt = Just gfmt}
                 )
                 "FMT")
       (printf "Force the output format to one of:\n%s"
@@ -161,8 +160,7 @@ opts =
                       Nothing -> do
                         ef "'%s' is not a valid type of edge." edge
                         exitFailure
-                      Just edgeType -> do
-                        return $ c { edgeType = Just edgeType }
+                      Just x -> return c {edgeType = Just x}
                 )
                 "EDGE")
       (printf "Select one type of edge:\n%s"

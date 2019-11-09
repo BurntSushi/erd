@@ -34,10 +34,10 @@ main = do
     Left err -> do
       hPutStrLn stderr err
       exitFailure
-    Right er -> let dotted = dotER conf er
+    Right er -> let erDot = dotER conf er
                     toFile h = SB.hGetContents h >>= SB.hPut (snd $ cout conf)
                     fmt = fromMaybe Pdf (outfmt conf)
-                 in graphvizWithHandle Dot dotted fmt toFile
+                 in graphvizWithHandle Dot erDot fmt toFile
   hClose (snd $ cin conf)
   hClose (snd $ cout conf)
 
@@ -71,9 +71,9 @@ htmlEntity e = H.Table H.HTable
                  }
   where rows = headerRow : map htmlAttr (attribs e)
         headerRow = H.Cells [H.LabelCell [] $ H.Text text]
-        text = withLabelFmt " [%s]" (hoptions e) $ bold hname
+        text = withLabelFmt " [%s]" (hoptions e) $ boldFont hname
         hname = htmlFont (hoptions e) (name e)
-        bold s = [H.Format H.Bold s]
+        boldFont s = [H.Format H.Bold s]
 
 -- | Extracts and formats a graph title from the options given.
 -- The options should be title options from an ER value.

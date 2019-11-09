@@ -8,7 +8,6 @@ import qualified Erd.ER                        as ER
 import           Erd.Render                    (htmlAttr)
 
 import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.Map                      as M
 import           Test.Tasty
 import           Test.Tasty.HUnit
 

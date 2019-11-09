@@ -75,7 +75,7 @@ executable erd
       Erd.Render
       Text.Parsec.Erd.Parser
   main-is: Main.hs
-  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  ghc-options: -Wall -W
   build-depends: base >= 4.5 && <5
                , directory >= 1.3.3.0
                , filepath >= 1.4.2.1
@@ -87,13 +87,11 @@ executable erd
                , yaml >= 0.11.0.0
                , raw-strings-qq >= 1.1
 
-
-
 test-suite spec
   default-language: Haskell2010
   type: exitcode-stdio-1.0
   main-is: Spec.hs
-  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-unused-do-bind
+  ghc-options: -Wall -W
   hs-source-dirs:
       test, src
   other-modules:

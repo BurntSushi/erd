@@ -10,41 +10,38 @@ module Erd.ER
   )
 where
 
-import qualified Data.Map as M
-import Data.Maybe (mapMaybe)
-import Data.Text.Lazy
-import Data.Word (Word8)
-import Text.Printf (printf)
+import qualified Data.Map                        as M
+import           Data.Maybe                      (mapMaybe)
+import           Data.Text.Lazy
+import           Data.Word                       (Word8)
+import           Text.Printf                     (printf)
 
-import Data.GraphViz.Parsing (ParseDot, parse, runParser)
-import qualified Data.GraphViz.Attributes.HTML as H
-import Data.GraphViz.Attributes.Colors (Color)
+import           Data.GraphViz.Attributes.Colors (Color)
+import qualified Data.GraphViz.Attributes.HTML   as H
+import           Data.GraphViz.Parsing           (ParseDot, parse, runParser)
 
 -- | Represents a single schema.
 data ER = ER { entities :: [Entity]
-             , rels :: [Relation]
-             , title :: Options
-             }
-          deriving (Show, Eq)
+             , rels     :: [Relation]
+             , title    :: Options
+             } deriving (Show, Eq)
 
 -- | Represents a single entity in a schema.
-data Entity = Entity { name :: Text
-                     , attribs :: [Attribute]
+data Entity = Entity { name     :: Text
+                     , attribs  :: [Attribute]
                      , hoptions :: Options
                      , eoptions :: Options
-                     }
-              deriving (Show, Eq)
+                     } deriving (Show, Eq)
 
 instance Ord Entity where
   e1 `compare` e2 = name e1 `compare` name e2
 
 -- | Represents a single attribute in a particular entity.
-data Attribute = Attribute { field :: Text
-                           , pk :: Bool
-                           , fk :: Bool
+data Attribute = Attribute { field    :: Text
+                           , pk       :: Bool
+                           , fk       :: Bool
                            , aoptions :: Options
-                           }
-                 deriving (Show, Eq)
+                           } deriving (Show, Eq)
 
 instance Ord Attribute where
   a1 `compare` a2 = field a1 `compare` field a2
@@ -105,15 +102,15 @@ optionParse :: ParseDot a => (a -> Option) -> String -> Either String Option
 optionParse con s =
   case fst $ runParser parse quoted of
     Left err -> Left (printf "%s (bad value '%s')" err s)
-    Right a -> Right (con a)
+    Right a  -> Right (con a)
   where quoted = "\"" `append` pack s `append` "\""
 
 -- | Selects an option if and only if it corresponds to a font attribute.
 optToFont :: Option -> Maybe H.Attribute
-optToFont (Color c) = Just $ H.Color c
+optToFont (Color c)    = Just $ H.Color c
 optToFont (FontFace s) = Just $ H.Face s
 optToFont (FontSize d) = Just $ H.PointSize d
-optToFont _ = Nothing
+optToFont _            = Nothing
 
 -- | Selects an option if and only if it corresponds to an HTML attribute.
 -- In particular, for tables or table cells.
@@ -131,7 +128,7 @@ optToHtml _                 = Nothing
 -- | Selects an option if and only if it corresponds to a label.
 optToLabel :: Option -> Maybe Text
 optToLabel (Label s) = Just $ pack s
-optToLabel _ = Nothing
+optToLabel _         = Nothing
 
 -- | Represents a relationship between exactly two entities. After parsing,
 -- each `rel` is guaranteed to correspond to an entity defined in the same
@@ -141,7 +138,7 @@ optToLabel _ = Nothing
 -- Those cardinalities are: 0 or 1, exactly 1, 0 or more and 1 or more.
 data Relation = Relation { entity1, entity2 :: Text
                          , card1,   card2   :: Cardinality
-                         , roptions :: Options
+                         , roptions         :: Options
                          }
                 deriving (Show, Eq)
 
@@ -151,10 +148,10 @@ data Cardinality = ZeroOne
                  | OnePlus deriving (Eq)
 
 instance Show Cardinality where
-  show ZeroOne = "{0,1}"
-  show One = "1"
+  show ZeroOne  = "{0,1}"
+  show One      = "1"
   show ZeroPlus = "0..N"
-  show OnePlus ="1..N"
+  show OnePlus  = "1..N"
 
 -- | Maps a string representation to a particular relationship cardinality.
 cardByName :: Char -> Maybe Cardinality
@@ -162,7 +159,7 @@ cardByName '?' = Just ZeroOne
 cardByName '1' = Just One
 cardByName '*' = Just ZeroPlus
 cardByName '+' = Just OnePlus
-cardByName _ = Nothing
+cardByName _   = Nothing
 
 -- | Hard-coded default options for all graph titles.
 defaultTitleOpts :: Options

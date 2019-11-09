@@ -1,20 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes       #-}
+
 module Test.Text.Parsec.Erd.Parser
-  (testEr)
-  where
-import Test.Tasty
-import Test.Tasty.HUnit
-import Text.RawString.QQ (r)
-import Data.Text  (Text)
-import Data.Text.Lazy (fromStrict)
-import Text.Parsec (parse)
-import qualified Data.GraphViz.Attributes.HTML as H
-import qualified Data.Map                      as M
-import Data.Map (fromList)
-import Erd.ER
-import Text.Parsec.Erd.Parser (document, AST(..), GlobalOptions(..))
-import Data.GraphViz.Attributes.Colors (Color(..))
+  (testEr
+  ) where
+
+import           Data.GraphViz.Attributes.Colors (Color (..))
+import qualified Data.GraphViz.Attributes.HTML   as H
+import           Data.Map                        (fromList)
+import qualified Data.Map                        as M
+import           Data.Text                       (Text)
+import           Data.Text.Lazy                  (fromStrict)
+import           Erd.ER
+import           Test.Tasty
+import           Test.Tasty.HUnit
+import           Text.Parsec                     (parse)
+import           Text.Parsec.Erd.Parser          (AST (..), GlobalOptions (..),
+                                                  document)
+import           Text.RawString.QQ               (r)
 
 parseDoc :: Text -> (GlobalOptions, [AST]) -> Assertion
 parseDoc input expect= Right expect `shouldBe` parse document "" (fromStrict input) where
@@ -166,7 +169,9 @@ player      1--* play_player
 |]
 
 
-data ChunckAST = CE [Entity] | CA [Attribute] | CR [Relation] deriving (Eq)
+data ChunckAST = CE [Entity] | CA [Attribute] | CR [Relation]
+               deriving (Eq)
+
 toAST :: ChunckAST -> [AST]
 toAST (CE x) = map E x
 toAST (CA x) = map A x
@@ -175,8 +180,8 @@ toAST (CR x) = map R x
 nfldbResult :: (GlobalOptions, [AST])
 nfldbResult = (opts, asts) where
   opts = GlobalOptions {gtoptions = fromList [("label",Label "nfldb Entity-Relationship diagram (condensed)"),("size",FontSize 20.0)], ghoptions = fromList [], geoptions = fromList [], groptions = fromList []}
-  asts = concatMap toAST $ entities:(attributes ++ [relations])
-  entities = CE [
+  asts = concatMap toAST $ es:(attributes ++ [relations])
+  es = CE [
     Entity {name = "player", attribs = [],
       hoptions = fromList [("bgcolor",BgColor (RGB {red = 208, green = 224, blue = 208}))],
       eoptions = fromList [("bgcolor",BgColor (RGB {red = 208, green = 224, blue = 208}))]
@@ -272,5 +277,4 @@ nfldbResult = (opts, asts) where
      Relation {entity1 = "drive", entity2 = "play", card1 = One, card2 = ZeroPlus, roptions = fromList []},
      Relation {entity1 = "drive", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []},
      Relation {entity1 = "play", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "player", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []}
-               ]
+     Relation {entity1 = "player", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []} ]

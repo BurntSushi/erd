@@ -4,25 +4,25 @@ module Erd.Parse
   )
 where
 
-import Control.Monad (when)
-import Data.List (find)
-import Data.Maybe
-import Data.Text.Lazy hiding (find, map, reverse)
-import Data.Text.Lazy.IO
-import System.IO (Handle)
-import Text.Parsec
-import Text.Printf (printf)
-import Text.Parsec.Erd.Parser (AST(..), GlobalOptions(..), document)
+import           Erd.ER
 
-import Erd.ER
+import           Control.Monad          (when)
+import           Data.List              (find)
+import           Data.Maybe
+import           Data.Text.Lazy         hiding (find, map, reverse)
+import           Data.Text.Lazy.IO
+import           System.IO              (Handle)
+import           Text.Parsec
+import           Text.Parsec.Erd.Parser (AST (..), GlobalOptions (..), document)
+import           Text.Printf            (printf)
 
 loadER :: String -> Handle -> IO (Either String ER)
 loadER fpath f = do
   s <- hGetContents f
   case parse (do { (opts, ast) <- document; return $ toER opts ast}) fpath s of
-    Left err -> return $ Left $ show err
+    Left err           -> return $ Left $ show err
     Right err@(Left _) -> return err
-    Right (Right er) -> return $ Right er
+    Right (Right er)   -> return $ Right er
 
 -- | Converts a list of syntactic categories in an entity-relationship
 -- description to an ER representation. If there was a problem with the
@@ -32,14 +32,14 @@ loadER fpath f = do
 -- This preserves the ordering of the syntactic elements in the original
 -- description.
 toER :: GlobalOptions -> [AST] -> Either String ER
-toER gopts = toER' (ER [] [] title)
-  where title = gtoptions gopts `mergeOpts` defaultTitleOpts
+toER gopts = toER' (ER [] [] erTitle)
+  where erTitle = gtoptions gopts `mergeOpts` defaultTitleOpts
 
         toER' :: ER -> [AST] -> Either String ER
         toER' er [] = Right (reversed er) >>= validRels
         toER' ER { entities = [] } (A a:_) =
-          let name = show (field a)
-           in Left $ printf "Attribute '%s' comes before first entity." name
+          let fieldName = show (field a)
+          in  Left $ printf "Attribute '%s' comes before first entity." fieldName
         toER' er@ER { entities = e':es } (A a:xs) = do
           let e = e' { attribs = a:attribs e' }
           toER' (er { entities = e:es }) xs
