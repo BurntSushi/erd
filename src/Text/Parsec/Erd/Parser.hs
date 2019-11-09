@@ -14,7 +14,8 @@ where
 
 import Control.Monad (liftM2, when, void)
 import Data.Char (isAlphaNum, isSpace, isControl)
-import qualified Data.Map as M
+import qualified Data.GraphViz.Attributes.HTML as H
+import qualified Data.Map                      as M
 import Data.Maybe
 import Data.Text.Lazy
 import Text.Parsec
@@ -67,7 +68,7 @@ attr = do
   eolComment
   return
     $ Just
-    $ A Attribute { field = n, pk = ispk, fk = isfk, aoptions = opts }
+    $ A Attribute { field = n, pk = ispk, fk = isfk, aoptions = opts <> defaultAttrOpts}
 
 rel :: Parser (Maybe AST)
 rel = do
