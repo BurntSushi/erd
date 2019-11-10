@@ -42,6 +42,7 @@ data Config =
          , configFile :: Maybe FilePath
          }
 
+-- | Represents fields that are stored in the configuration file.
 data ConfigFile = ConfigFile
   { cFmtOut   :: String
   , cEdgeType :: String
@@ -60,18 +61,17 @@ defaultConfig =
          , cout = ("<stdout>", stdout)
          , outfmt = Nothing
          , edgeType = Just A.SplineEdges
-         , configFile = Nothing -- TODO: should default configfile exists here?
+         , configFile = Nothing
          }
 
 defaultConfigFile :: B.ByteString
 defaultConfigFile = B.unlines
   [[r|# Erd (~/.erd.yaml) default configuration file.|],
-   B.append [r|output-format: pdf # Supported formats: |] (defVals fmts),
-   B.append [r|edge-style: spline # Supported values : |] (defVals edges)]
+   B.append [r|output-format: pdf           # Supported formats: |] (defVals fmts),
+   B.append [r|edge-style: spline           # Supported values : |] (defVals edges)]
   where
     defVals = B.pack . concat . intersperse " " . M.keys
 
--- TODO: test whether the following described behaviour holds.
 -- | Creates a new Config value from command line options.
 -- If an output path is given and `--fmt` is omitted, then a format
 -- will be inferred from the output path extension.
@@ -108,12 +108,12 @@ opts =
                       globConfFile <- readGlobalConfigFile
                       f <- readConfigFile mf
                       case (f, globConfFile) of
-                        (Nothing, Nothing) -> -- Config-file is desired, but unavailable.
+                        (Nothing, Nothing) ->      -- Config-file is desired, but unavailable.
                           B.putStr defaultConfigFile >> return c
-                        (Nothing, Just globalC) -> -- Use global config-file.
+                        (Nothing, Just globalC) -> -- Use global config-file from ~/.erd.yaml .
                           return c {outfmt   = (toGraphFmt $ cFmtOut globalC),
                                     edgeType = (toEdgeG $ cEdgeType globalC)}
-                        (Just localC, _) -> -- Use user defined config-file.
+                        (Just localC, _) ->        -- Use user specified config-file.
                           return c {outfmt   = (toGraphFmt $ cFmtOut localC),
                                     edgeType = (toEdgeG $ cEdgeType localC)}
                     ) "FILE")
@@ -169,6 +169,7 @@ opts =
               (intercalate ", " $ M.keys edges))
   ]
 
+-- | Reads and parses configuration file at default location: ~/.erd.yaml
 readGlobalConfigFile :: IO (Maybe ConfigFile)
 readGlobalConfigFile = do
   mHome <- tryJust (guard . isDoesNotExistError) getHomeDirectory
@@ -176,8 +177,8 @@ readGlobalConfigFile = do
     Left _     -> return Nothing
     Right home -> readConfigFile $ Just (home </> ".erd.yaml")
 
--- TODO: Do something with MonadThrow, in order to provide meaningful message
--- when parsing fails.
+-- | Reads and parses a configuration file, exceptions may come via
+-- AesonException.
 readConfigFile :: Maybe FilePath -> IO (Maybe ConfigFile)
 readConfigFile Nothing = return Nothing
 readConfigFile (Just f) = do
