@@ -56,10 +56,10 @@ dotER conf er = graph' $ do
   forM_ (entities er) $ \e ->
     node (name e) [toLabel (htmlEntity e)]
   forM_ (rels er) $ \r -> do
-    let opts = roptions r
-    let rlab = A.HtmlLabel . H.Text . htmlFont opts . L.pack . show
-    let (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
-    let label = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " opts []
+    let optss    = roptions r
+        rlab     = A.HtmlLabel . H.Text . htmlFont optss . L.pack . show
+        (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
+        label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
     edge (entity1 r) (entity2 r) [label, l1, l2]
 
 -- | Converts a single entity to an HTML label.
