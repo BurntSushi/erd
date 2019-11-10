@@ -15,7 +15,7 @@ import qualified Data.ByteString.Char8             as B
 import           Data.Char                         (isSpace)
 import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.GraphViz.Commands            as G
-import           Data.List                         (dropWhileEnd, intercalate)
+import           Data.List                         (dropWhileEnd, intercalate, intersperse, concat)
 import qualified Data.Map                          as M
 import           Data.Maybe                        (isNothing)
 import           Data.Yaml                         (FromJSON (..), (.:))
@@ -64,10 +64,12 @@ defaultConfig =
          }
 
 defaultConfigFile :: B.ByteString
-defaultConfigFile = [r|# Erd (~/.erd.yaml) default configuration file.
-output-format: pdf
-edge-style: spline
-|]
+defaultConfigFile = B.unlines
+  [[r|# Erd (~/.erd.yaml) default configuration file.|],
+   B.append [r|output-format: pdf # Supported formats: |] (defVals fmts),
+   B.append [r|edge-style: spline # Supported values : |] (defVals edges)]
+  where
+    defVals = B.pack . concat . intersperse " " . M.keys
 
 -- TODO: test whether the following described behaviour holds.
 -- | Creates a new Config value from command line options.
