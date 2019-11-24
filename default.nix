@@ -17,7 +17,7 @@
 }:
 let
   cabalPackageName = "erd";
-  compiler = "ghc865"; # matching stack.yaml
+  compiler = "ghc864"; # matching stack.yaml
 
   # Pin static-haskell-nix version.
   static-haskell-nix =
