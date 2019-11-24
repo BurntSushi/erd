@@ -114,13 +114,35 @@ The PDF should now contain a graph that looks like this:
 
 ### Available command-line options
 
-| Short   | Long          | Description|
-|---------|---------------|------------|
-| -i FILE | --input=FILE  | When set, input will be read from the given file. Otherwise, stdin will be used.|
-| -o FILE | --output=FILE | When set, output will be written to the given file. Otherwise, stdout will be used. If given and if --fmt is omitted, then the format will be guessed from the file extension.|
-| -f FMT  | --fmt=FMT     | Force the output format to one of: bmp, dot, eps, gif, jpg, pdf, plain, png, ps, ps2, svg, tiff.|
-| -e EDGE | --edge=EDGE   | Select one type of edge: compound, noedge, ortho, poly, spline.|
-| -h      | --help        | Show this usage message.|
+| Short    | Long            | Description                                                                                                                                                                    |
+|----------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -c[FILE] | --config[=FILE] | Configuration file.                                                                                                                                                            |
+| -i FILE  | --input=FILE    | When set, input will be read from the given file. Otherwise, stdin will be used.                                                                                               |
+| -o FILE  | --output=FILE   | When set, output will be written to the given file. Otherwise, stdout will be used. If given and if --fmt is omitted, then the format will be guessed from the file extension. |
+| -f FMT   | --fmt=FMT       | Force the output format to one of: bmp, dot, eps, gif, jpg, pdf, plain, png, ps, ps2, svg, tiff.                                                                               |
+| -e EDGE  | --edge=EDGE     | Select one type of edge: compound, noedge, ortho, poly, spline.                                                                                                                |
+| -h       | --help          | Show this usage message.                                                                                                                                                       |
+
+### Formatting defined in configuration file
+
+`erd` may be invoked using the _-c_ or _--config_ argument
+
+- without a provided configuration file it will try to read the file
+  _~/.erd.yaml_ which is the path of the configuration file to store formatting
+  settings of any resulted graph. In case the file _~/.erd.yaml_ does not exists
+  `erd` will print the default content of this file to stdout which you can
+  inspect and/or redirect appropriately, e.g.: ```erd -c -i ./examples/nfldb.er
+  -o ./nfldb.pdf 1 > ~/.erd.yaml``` .
+
+- with a provided configuration file erd will use that instead of _~/.erd.yaml_.
+  For instance: ```erd -c./myconfig.yaml -i ./examples/nfldb.er -o ./nfldb.pdf```
+  .
+
+The configuration file in commented sections do contain the supported formatting
+options, so you can use one of the listed ones.
+
+The default content of the configuration file would be only shown when
+_~/.erd.yaml_ does not exist.
 
 ### The `er` file format
 
