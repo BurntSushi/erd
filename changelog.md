@@ -1,4 +1,4 @@
-* Text alignment in a Cell of a Table is explicitly stated. (PR #64)
+* Text alignment in a Cell of a Table is explicitly defined. (PR #64)
 
 * New build target using _static-haskell-nix_ to create statically linked erd. (PR #61)
 
@@ -6,7 +6,7 @@
 
 * Resolving compiler warnings that were muted by erlier setup.
 
-* Adding '-c/--config' switch to optionally use _~/.erd.yaml_ as configuration file (PR #68)
+* Adding optional '-c/--config' switch to use _~/.erd.yaml_ as configuration file (PR #68)
 
 0.2.0.0 (2019-03-26)
 
