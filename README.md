@@ -51,7 +51,7 @@ brew install graphviz
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
 
-    cabal install --allow-newer erd
+    cabal new-install erd
 
 Alternatively, you can clone this repository and build from source:
 
@@ -59,7 +59,7 @@ Alternatively, you can clone this repository and build from source:
     cd erd
     cabal new-configure
     cabal new-build
-    # binary is now at ./dist/build/erd/erd
+    # binary is now under ./dist-newstyle/build/
 
 Usage information is available with `erd --help`.
 
