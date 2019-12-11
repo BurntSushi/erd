@@ -48,7 +48,7 @@ on Unix and OS X, `%APPDATA%\local\bin` on Windows.
 brew install graphviz
 ```
 
-[The issue 1636](https://gitlab.com/graphviz/graphviz/issues/1636) explains in details what needs to be performed in details to find out whether _pango_ support is enabled and how to make it happen in case it wasn't.
+[The issue 1636](https://gitlab.com/graphviz/graphviz/issues/1636) explains what needs to be performed in details to find out whether _pango_ support is enabled and how to make it happen in case it wasn't.
 
 [erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
