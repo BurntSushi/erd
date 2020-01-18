@@ -3,12 +3,14 @@
 module Erd.Render
   (htmlAttr,
    htmlFont,
+   recordAttr,
    withLabelFmt
   ) where
 
 import qualified Erd.ER                        as ER
 
 import qualified Data.GraphViz.Attributes.HTML as H
+import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.Text.Lazy                as L
 import           Text.Printf                   (printf)
 
@@ -21,7 +23,9 @@ htmlAttr a = H.Cells [cell]
         fkfmt s = if ER.fk a then [H.Format H.Italics s] else s
         opts    = ER.aoptions a
         cellAttrs = ER.optionsTo ER.optToHtml opts
-
+-- | Converts a single attribute to a RecordField ( an element of a dot table )
+recordAttr :: ER.Attribute -> A.RecordField
+recordAttr a = A.FieldLabel $ ER.field a -- should change to add port support!
 -- | Formats an arbitrary string with the options given (using only font
 -- attributes).
 htmlFont :: ER.Options -> L.Text -> H.Text

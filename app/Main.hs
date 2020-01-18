@@ -22,7 +22,7 @@ import           Data.GraphViz.Types.Monadic
 import           Erd.Config
 import           Erd.ER
 import           Erd.Parse
-import           Erd.Render                          (htmlAttr, htmlFont,
+import           Erd.Render                          (htmlAttr, htmlFont,recordAttr,
                                                       withLabelFmt)
 
 main :: IO ()
@@ -34,12 +34,19 @@ main = do
     Left err -> do
       hPutStrLn stderr err
       exitFailure
-    Right er -> let erDot = dotER conf er
+    Right er -> let erDot = (chooseGenerator conf) conf er
                     toFile h = SB.hGetContents h >>= SB.hPut (snd $ cout conf)
                     fmt = fromMaybe Pdf (outfmt conf)
                  in graphvizWithHandle Dot erDot fmt toFile
   hClose (snd $ cin conf)
   hClose (snd $ cout conf)
+
+-- | Chooses a GraphViz generator from a hardcoded predicate.
+chooseGenerator :: Config -> (Config -> ER -> G.DotGraph L.Text)
+chooseGenerator conf = if nohtml conf then
+                            dotERNoHtml
+                        else
+                            dotER
 
 -- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
 dotER :: Config -> ER -> G.DotGraph L.Text
@@ -62,6 +69,27 @@ dotER conf er = graph' $ do
         label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
     edge (entity1 r) (entity2 r) [label, l1, l2]
 
+-- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
+dotERNoHtml:: Config -> ER -> G.DotGraph L.Text
+dotERNoHtml conf er = graph' $ do
+  graphAttrs (graphTitle $ title er)
+  graphAttrs [ A.RankDir A.FromLeft
+             , A.Splines $ fromMaybe (fromJust . edgeType $ defaultConfig) (edgeType conf)
+             ]
+  nodeAttrs [shape Record, A.RankDir $ A.FromTop]  
+  edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
+            , A.MinLen 2 -- give some breathing room
+            , A.Style [A.SItem A.Dashed []] -- easier to read labels, maybe?
+            ]
+  forM_ (entities er) $ \e ->
+    node (name e) [toLabel (dotEntity e)]
+  forM_ (rels er) $ \r -> do
+    let optss    = roptions r
+        rlab     = A.HtmlLabel . H.Text . htmlFont optss . L.pack . show
+        (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
+        label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
+    edge (entity1 r) (entity2 r) [label, l1, l2]
+
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
 htmlEntity e = H.Table H.HTable
@@ -74,6 +102,10 @@ htmlEntity e = H.Table H.HTable
         text = withLabelFmt " [%s]" (hoptions e) $ boldFont hname
         hname = htmlFont (hoptions e) (name e)
         boldFont s = [H.Format H.Bold s]
+
+-- | Converts a single entity to a plain Dot Label
+dotEntity :: Entity -> A.RecordFields
+dotEntity e = ( A.FieldLabel $ name e ) : map recordAttr (attribs e)
 
 -- | Extracts and formats a graph title from the options given.
 -- The options should be title options from an ER value.
