@@ -151,6 +151,6 @@ script:
   # Building without installed constraints for packages in global-db...
   - rm -f cabal.project.local
   - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all | color_cabal_output
-
+  - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
 # REGENDATA ("0.9.20191213",["./erd.cabal","--output","./.travis-new.yml"])
 # EOF
