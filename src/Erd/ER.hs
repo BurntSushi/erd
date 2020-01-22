@@ -189,5 +189,5 @@ defaultRelOpts = M.empty
 
 defaultAttrOpts :: Options
 defaultAttrOpts = M.fromList
-  [ ("text-alignment", TextAlignment H.HRight)
+  [ ("text-alignment", TextAlignment H.HLeft)
   ]

@@ -21,5 +21,5 @@ test01 = result @?= expected
     inputF   = "Field"
     input    = ER.Attribute inputF True False ER.defaultAttrOpts
     result   = htmlAttr input
-    expected = H.Cells [H.LabelCell [H.Align H.HRight]
+    expected = H.Cells [H.LabelCell [H.Align H.HLeft]
                         (H.Text [H.Format H.Underline [H.Font [] [H.Str inputF]]])]

@@ -65,16 +65,16 @@ simpleResult = (opts, asts) where
   opts = GlobalOptions M.empty M.empty M.empty M.empty
   asts = [
     E (Entity {name = "Person", attribs = [], hoptions = fromList [], eoptions = fromList []}),
-    A (Attribute {field = "name", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "height", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "weight", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "birth date", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "birth_place_id", pk = False, fk = True, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
+    A (Attribute {field = "name", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "height", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "weight", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "birth date", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "birth_place_id", pk = False, fk = True, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     E (Entity {name = "Birth Place", attribs = [], hoptions = fromList [], eoptions = fromList []}),
-    A (Attribute {field = "id", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "birth city", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "birth state", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
-    A (Attribute {field = "birth country", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HRight)]}),
+    A (Attribute {field = "id", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "birth city", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "birth state", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
+    A (Attribute {field = "birth country", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     R (Relation {entity1 = "Person", entity2 = "Birth Place", card1 = ZeroPlus , card2 = One, roptions = fromList []})]
 
 nfldbText :: Text
@@ -189,79 +189,79 @@ nfldbResult = (opts, asts) where
     ]
   attributes = [
     CA [
-        Attribute {field = "player_id", pk = True, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "full_name", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "position", pk = False, fk = False, aoptions = fromList [("label",Label "player_pos, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "status", pk = False, fk = False, aoptions = fromList [("label",Label "player_status, not null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "player_id", pk = True, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "full_name", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "position", pk = False, fk = False, aoptions = fromList [("label",Label "player_pos, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "status", pk = False, fk = False, aoptions = fromList [("label",Label "player_status, not null"),("text-alignment",TextAlignment H.HLeft)]}
       ],
     CE [
         Entity {name = "team", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 208, green = 224, blue = 208}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 208, green = 224, blue = 208}))]}
       ],
     CA [
-        Attribute {field = "team_id", pk = True, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "city", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "name", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "team_id", pk = True, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "city", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "name", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]}
       ],
     CE [
         Entity {name = "game", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))]}
       ],
     CA [
-        Attribute {field = "gsis_id", pk = True, fk = False, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "start_time", pk = False, fk = False, aoptions = fromList [("label",Label "utctime, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "week", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "season_year", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "season_type", pk = False, fk = False, aoptions = fromList [("label",Label "season_phase, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "finished", pk = False, fk = False, aoptions = fromList [("label",Label "boolean, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "home_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "home_score", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "away_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "away_score", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "gsis_id", pk = True, fk = False, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "start_time", pk = False, fk = False, aoptions = fromList [("label",Label "utctime, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "week", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "season_year", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "season_type", pk = False, fk = False, aoptions = fromList [("label",Label "season_phase, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "finished", pk = False, fk = False, aoptions = fromList [("label",Label "boolean, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "home_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "home_score", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "away_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "away_score", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]}
       ],
     CE [
         Entity {name = "drive", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))]}
       ],
     CA [
-        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "drive_id", pk = True, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "start_field", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "start_time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "end_field", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "end_time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "pos_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "pos_time", pk = False, fk = False, aoptions = fromList [("label",Label "pos_period, null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "drive_id", pk = True, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "start_field", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "start_time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "end_field", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "end_time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "pos_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "pos_time", pk = False, fk = False, aoptions = fromList [("label",Label "pos_period, null"),("text-alignment",TextAlignment H.HLeft)]}
       ],
     CE [
         Entity {name = "play", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))]}
       ],
     CA [
-        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "drive_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "play_id", pk = True, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "pos_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "yardline", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "down", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "yards_to_go", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "drive_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "play_id", pk = True, fk = False, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "time", pk = False, fk = False, aoptions = fromList [("label",Label "game_time, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "pos_team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "yardline", pk = False, fk = False, aoptions = fromList [("label",Label "field_pos, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "down", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "yards_to_go", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HLeft)]}
       ],
     CE [
         Entity {name = "play_player", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 236, green = 236, blue = 252}))]}
       ],
     CA [
-        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "drive_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "play_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "player_id", pk = True, fk = True, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "gsis_id", pk = True, fk = True, aoptions = fromList [("label",Label "gameid, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "drive_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "play_id", pk = True, fk = True, aoptions = fromList [("label",Label "usmallint, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "player_id", pk = True, fk = True, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "team", pk = False, fk = False, aoptions = fromList [("label",Label "varchar, not null"),("text-alignment",TextAlignment H.HLeft)]}
      ],
      CE [
         Entity {name = "meta", attribs = [], hoptions = fromList [("bgcolor",BgColor (RGB {red = 252, green = 236, blue = 236}))], eoptions = fromList [("bgcolor",BgColor (RGB {red = 252, green = 236, blue = 236}))]}
        ],
     CA [
-        Attribute {field = "version", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "season_type", pk = False, fk = False, aoptions = fromList [("label",Label "season_phase, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "season_year", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, null"),("text-alignment",TextAlignment H.HRight)]},
-        Attribute {field = "week", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, null"),("text-alignment",TextAlignment H.HRight)]}
+        Attribute {field = "version", pk = False, fk = False, aoptions = fromList [("label",Label "smallint, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "season_type", pk = False, fk = False, aoptions = fromList [("label",Label "season_phase, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "season_year", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, null"),("text-alignment",TextAlignment H.HLeft)]},
+        Attribute {field = "week", pk = False, fk = False, aoptions = fromList [("label",Label "usmallint, null"),("text-alignment",TextAlignment H.HLeft)]}
       ]
     ]
   relations = CR [
