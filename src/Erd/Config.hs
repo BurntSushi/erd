@@ -15,7 +15,7 @@ import qualified Data.ByteString.Char8             as B
 import           Data.Char                         (isSpace)
 import qualified Data.GraphViz.Attributes.Complete as A
 import qualified Data.GraphViz.Commands            as G
-import           Data.List                         (dropWhileEnd, intercalate, intersperse, concat)
+import           Data.List                         (dropWhileEnd, intercalate)
 import qualified Data.Map                          as M
 import           Data.Maybe                        (isNothing)
 import           Data.Yaml                         (FromJSON (..), (.:))
@@ -70,7 +70,7 @@ defaultConfigFile = B.unlines
    B.append [r|output-format: pdf           # Supported formats: |] (defVals fmts),
    B.append [r|edge-style: spline           # Supported values : |] (defVals edges)]
   where
-    defVals = B.pack . concat . intersperse " " . M.keys
+    defVals = B.pack . unwords . M.keys
 
 -- | Creates a new Config value from command line options.
 -- If an output path is given and `--fmt` is omitted, then a format
@@ -111,11 +111,11 @@ opts =
                         (Nothing, Nothing) ->      -- Config-file is desired, but unavailable.
                           B.putStr defaultConfigFile >> return c
                         (Nothing, Just globalC) -> -- Use global config-file from ~/.erd.yaml .
-                          return c {outfmt   = (toGraphFmt $ cFmtOut globalC),
-                                    edgeType = (toEdgeG $ cEdgeType globalC)}
+                          return c {outfmt   = toGraphFmt $ cFmtOut globalC,
+                                    edgeType = toEdgeG $ cEdgeType globalC}
                         (Just localC, _) ->        -- Use user specified config-file.
-                          return c {outfmt   = (toGraphFmt $ cFmtOut localC),
-                                    edgeType = (toEdgeG $ cEdgeType localC)}
+                          return c {outfmt   = toGraphFmt $ cFmtOut localC,
+                                    edgeType = toEdgeG $ cEdgeType localC}
                     ) "FILE")
       "Configuration file."
   , O.Option "i" ["input"]
