@@ -84,7 +84,7 @@ htmlEntity e = H.Table H.HTable
 
 -- | Converts a single entity to a plain Dot Label
 dotEntity :: Entity -> A.RecordFields
-dotEntity e = ( A.FieldLabel $ name e ) : map recordAttr (attribs e)
+dotEntity e =  A.FieldLabel ( name e ) : map recordAttr (attribs e)
 
 -- | Extracts and formats a graph title from the options given.
 -- The options should be title options from an ER value.
