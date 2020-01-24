@@ -40,7 +40,7 @@ data Config =
          , outfmt     :: Maybe G.GraphvizOutput
          , edgeType   :: Maybe A.EdgeType
          , configFile :: Maybe FilePath
-         , nohtml :: Bool
+         , dotentity  :: Bool
          }
 
 -- | Represents fields that are stored in the configuration file.
@@ -63,7 +63,7 @@ defaultConfig =
          , outfmt = Nothing
          , edgeType = Just A.SplineEdges
          , configFile = Nothing
-         , nohtml = False
+         , dotentity = False
          }
 
 defaultConfigFile :: B.ByteString
@@ -169,10 +169,10 @@ opts =
                 "EDGE")
       (printf "Select one type of edge:\n%s"
               (intercalate ", " $ M.keys edges))
-  , O.Option [] ["no-html"]
+  , O.Option [] ["dot-entity"]
       (O.NoArg (\cIO -> do 
                     c <- cIO
-                    return $ c { nohtml = True } ))
+                    return $ c { dotentity = True } ))
       ("When set, output will consist of regular dot tables instead of HTML tables.\n"
       ++ "Formatting will be disabled. Use only for further manual configuration.")
     
