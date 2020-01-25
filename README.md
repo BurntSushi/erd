@@ -123,6 +123,7 @@ The PDF should now contain a graph that looks like this:
 | -o FILE  | --output=FILE   | When set, output will be written to the given file. Otherwise, stdout will be used. If given and if --fmt is omitted, then the format will be guessed from the file extension. |
 | -f FMT   | --fmt=FMT       | Force the output format to one of: bmp, dot, eps, gif, jpg, pdf, plain, png, ps, ps2, svg, tiff.                                                                               |
 | -e EDGE  | --edge=EDGE     | Select one type of edge: compound, noedge, ortho, poly, spline.                                                                                                                |
+| -d       | --dot-entity    | When set, output will consist of regular dot tables instead of HTML tables. Formatting will be disabled.                                                                       |
 | -h       | --help          | Show this usage message.                                                                                                                                                       |
 
 ### Formatting defined in configuration file
@@ -415,10 +416,6 @@ You can output a `dot` file using the `--fmt` option or by simply using it as
 a file extension:
 
     erd -i something.er -o something.dot
-
-Note though that `erd` writes entities as HTML tables, so the resulting `dot`
-may not be so useful. (I would not be against a small addition to `erd` that
-uses no formatting and writes entities as regular dot tables.)
 
 
 ### Similar software
