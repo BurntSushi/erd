@@ -1,3 +1,5 @@
+* Support of regular dot-tables to visualize entities. (PR #74)
+
 * Text alignment in a Cell of a Table is explicitly defined. (PR #64)
 
 * New build target using _static-haskell-nix_ to create statically linked erd. (PR #61)

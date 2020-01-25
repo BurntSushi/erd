@@ -40,19 +40,22 @@ data Config =
          , outfmt     :: Maybe G.GraphvizOutput
          , edgeType   :: Maybe A.EdgeType
          , configFile :: Maybe FilePath
+         , dotentity  :: Bool
          }
 
 -- | Represents fields that are stored in the configuration file.
 data ConfigFile = ConfigFile
-  { cFmtOut   :: String
-  , cEdgeType :: String
+  { cFmtOut    :: String
+  , cEdgeType  :: String
+  , cDotEntity :: Bool
   } deriving Show
 
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
     ConfigFile <$>
     v .: "output-format" <*>
-    v .: "edge-style"
+    v .: "edge-style" <*>
+    v .: "dot-entity"
   parseJSON _ = fail "Incorrect configuration file."
 
 defaultConfig :: Config
@@ -62,13 +65,16 @@ defaultConfig =
          , outfmt = Nothing
          , edgeType = Just A.SplineEdges
          , configFile = Nothing
+         , dotentity = False
          }
 
 defaultConfigFile :: B.ByteString
 defaultConfigFile = B.unlines
   [[r|# Erd (~/.erd.yaml) default configuration file.|],
    B.append [r|output-format: pdf           # Supported formats: |] (defVals fmts),
-   B.append [r|edge-style: spline           # Supported values : |] (defVals edges)]
+   B.append [r|edge-style: spline           # Supported values : |] (defVals edges),
+   B.append [r|dot-entity: false            # Supported values : |] (defVals valBool)
+  ]
   where
     defVals = B.pack . unwords . M.keys
 
@@ -110,12 +116,10 @@ opts =
                       case (f, globConfFile) of
                         (Nothing, Nothing) ->      -- Config-file is desired, but unavailable.
                           B.putStr defaultConfigFile >> return c
-                        (Nothing, Just globalC) -> -- Use global config-file from ~/.erd.yaml .
-                          return c {outfmt   = toGraphFmt $ cFmtOut globalC,
-                                    edgeType = toEdgeG $ cEdgeType globalC}
-                        (Just localC, _) ->        -- Use user specified config-file.
-                          return c {outfmt   = toGraphFmt $ cFmtOut localC,
-                                    edgeType = toEdgeG $ cEdgeType localC}
+                        (Nothing, Just x) -> -- Use global config-file from ~/.erd.yaml .
+                          return $ toConfig x
+                        (Just x, _) ->        -- Use user specified config-file.
+                          return $ toConfig x
                     ) "FILE")
       "Configuration file."
   , O.Option "i" ["input"]
@@ -167,7 +171,18 @@ opts =
                 "EDGE")
       (printf "Select one type of edge:\n%s"
               (intercalate ", " $ M.keys edges))
+  , O.Option "d" ["dot-entity"]
+      (O.NoArg (\cIO -> do
+                    c <- cIO
+                    return $ c { dotentity = True } ))
+      ("When set, output will consist of regular dot tables instead of HTML tables.\n"
+      ++ "Formatting will be disabled. Use only for further manual configuration.")
   ]
+
+toConfig :: ConfigFile -> Config
+toConfig c = defaultConfig {outfmt    = toGraphFmt $ cFmtOut c,
+                            edgeType  = toEdgeG $ cEdgeType c,
+                            dotentity = cDotEntity c }
 
 -- | Reads and parses configuration file at default location: ~/.erd.yaml
 readGlobalConfigFile :: IO (Maybe ConfigFile)
@@ -212,6 +227,11 @@ edges = M.fromList
   , ("poly", Just A.PolyLine)
   , ("compound", Just A.CompoundEdge)
   ]
+
+valBool :: M.Map String Bool
+valBool = M.fromList
+  [ ("true", True)
+  , ("false", False) ]
 
 -- | takeExtension returns the last extension from a file path, or the
 -- empty string if no extension was found. e.g., the extension of

@@ -22,7 +22,7 @@ import           Data.GraphViz.Types.Monadic
 import           Erd.Config
 import           Erd.ER
 import           Erd.Parse
-import           Erd.Render                          (htmlAttr, htmlFont,
+import           Erd.Render                          (htmlAttr, htmlFont,recordAttr,
                                                       withLabelFmt)
 
 main :: IO ()
@@ -48,19 +48,25 @@ dotER conf er = graph' $ do
   graphAttrs [ A.RankDir A.FromLeft
              , A.Splines $ fromMaybe (fromJust . edgeType $ defaultConfig) (edgeType conf)
              ]
-  nodeAttrs [shape PlainText] -- recommended for HTML labels
+  nodeAttrs nodeGlobalAttributes
   edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
             , A.MinLen 2 -- give some breathing room
             , A.Style [A.SItem A.Dashed []] -- easier to read labels, maybe?
             ]
   forM_ (entities er) $ \e ->
-    node (name e) [toLabel (htmlEntity e)]
+    node (name e) [entityFmt e]
   forM_ (rels er) $ \r -> do
     let optss    = roptions r
         rlab     = A.HtmlLabel . H.Text . htmlFont optss . L.pack . show
         (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
         label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
     edge (entity1 r) (entity2 r) [label, l1, l2]
+    where nodeGlobalAttributes
+            | dotentity conf = [shape Record, A.RankDir A.FromTop]
+            | otherwise = [shape PlainText] -- recommended for HTML labels
+          entityFmt
+            | dotentity conf = toLabel . dotEntity
+            | otherwise = toLabel . htmlEntity
 
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
@@ -74,6 +80,10 @@ htmlEntity e = H.Table H.HTable
         text = withLabelFmt " [%s]" (hoptions e) $ boldFont hname
         hname = htmlFont (hoptions e) (name e)
         boldFont s = [H.Format H.Bold s]
+
+-- | Converts a single entity to a plain Dot Label
+dotEntity :: Entity -> A.RecordFields
+dotEntity e =  A.FieldLabel ( name e ) : map recordAttr (attribs e)
 
 -- | Extracts and formats a graph title from the options given.
 -- The options should be title options from an ER value.
