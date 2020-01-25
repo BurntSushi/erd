@@ -170,13 +170,11 @@ opts =
       (printf "Select one type of edge:\n%s"
               (intercalate ", " $ M.keys edges))
   , O.Option [] ["dot-entity"]
-      (O.NoArg (\cIO -> do 
+      (O.NoArg (\cIO -> do
                     c <- cIO
                     return $ c { dotentity = True } ))
       ("When set, output will consist of regular dot tables instead of HTML tables.\n"
       ++ "Formatting will be disabled. Use only for further manual configuration.")
-    
-
   ]
 
 -- | Reads and parses configuration file at default location: ~/.erd.yaml

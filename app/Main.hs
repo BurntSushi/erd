@@ -48,7 +48,7 @@ dotER conf er = graph' $ do
   graphAttrs [ A.RankDir A.FromLeft
              , A.Splines $ fromMaybe (fromJust . edgeType $ defaultConfig) (edgeType conf)
              ]
-  nodeAttrs nodeGlobalAttributes  
+  nodeAttrs nodeGlobalAttributes
   edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
             , A.MinLen 2 -- give some breathing room
             , A.Style [A.SItem A.Dashed []] -- easier to read labels, maybe?
@@ -61,13 +61,12 @@ dotER conf er = graph' $ do
         (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
         label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
     edge (entity1 r) (entity2 r) [label, l1, l2]
-    where nodeGlobalAttributes 
+    where nodeGlobalAttributes
             | dotentity conf = [shape Record, A.RankDir A.FromTop]
             | otherwise = [shape PlainText] -- recommended for HTML labels
-          entityFmt 
+          entityFmt
             | dotentity conf = toLabel . dotEntity
             | otherwise = toLabel . htmlEntity
-
 
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
