@@ -169,7 +169,7 @@ opts =
                 "EDGE")
       (printf "Select one type of edge:\n%s"
               (intercalate ", " $ M.keys edges))
-  , O.Option [] ["dot-entity"]
+  , O.Option "d" ["dot-entity"]
       (O.NoArg (\cIO -> do
                     c <- cIO
                     return $ c { dotentity = True } ))
