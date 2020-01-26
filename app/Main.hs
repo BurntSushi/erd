@@ -22,8 +22,8 @@ import           Data.GraphViz.Types.Monadic
 import           Erd.Config
 import           Erd.ER
 import           Erd.Parse
-import           Erd.Render                          (htmlAttr, htmlFont,recordAttr,
-                                                      withLabelFmt)
+import           Erd.Render                          (htmlAttr, htmlFont,
+                                                      recordAttr, withLabelFmt)
 
 main :: IO ()
 main = do

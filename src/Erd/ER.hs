@@ -21,27 +21,33 @@ import qualified Data.GraphViz.Attributes.HTML   as H
 import           Data.GraphViz.Parsing           (ParseDot, parse, runParser)
 
 -- | Represents a single schema.
-data ER = ER { entities :: [Entity]
-             , rels     :: [Relation]
-             , title    :: Options
-             } deriving (Show, Eq)
+data ER = ER
+    { entities :: [Entity]
+    , rels     :: [Relation]
+    , title    :: Options
+    }
+    deriving (Show, Eq)
 
 -- | Represents a single entity in a schema.
-data Entity = Entity { name     :: Text
-                     , attribs  :: [Attribute]
-                     , hoptions :: Options
-                     , eoptions :: Options
-                     } deriving (Show, Eq)
+data Entity = Entity
+    { name     :: Text
+    , attribs  :: [Attribute]
+    , hoptions :: Options
+    , eoptions :: Options
+    }
+    deriving (Show, Eq)
 
 instance Ord Entity where
   e1 `compare` e2 = name e1 `compare` name e2
 
 -- | Represents a single attribute in a particular entity.
-data Attribute = Attribute { field    :: Text
-                           , pk       :: Bool
-                           , fk       :: Bool
-                           , aoptions :: Options
-                           } deriving (Show, Eq)
+data Attribute = Attribute
+    { field    :: Text
+    , pk       :: Bool
+    , fk       :: Bool
+    , aoptions :: Options
+    }
+    deriving (Show, Eq)
 
 instance Ord Attribute where
   a1 `compare` a2 = field a1 `compare` field a2
@@ -67,17 +73,17 @@ optionsTo f = mapMaybe f . M.elems
 -- | A restricted subset of options in GraphViz that can be configured in
 -- an ER file.
 data Option = Label String
-            | BgColor Color
-            | Color Color
-            | FontFace Text
-            | FontSize Double
-            | Border Word8
-            | BorderColor Color
-            | CellSpacing Word8
-            | CellBorder Word8
-            | CellPadding Word8
-            | TextAlignment H.Align
-            deriving (Show, Eq)
+    | BgColor Color
+    | Color Color
+    | FontFace Text
+    | FontSize Double
+    | Border Word8
+    | BorderColor Color
+    | CellSpacing Word8
+    | CellBorder Word8
+    | CellPadding Word8
+    | TextAlignment H.Align
+    deriving (Show, Eq)
 
 -- | Given an option name and a string representation of its value,
 -- `optionByName` will attempt to parse the string as a value corresponding
@@ -136,16 +142,18 @@ optToLabel _         = Nothing
 --
 -- Each relationship has one of four cardinalities specified for both entities.
 -- Those cardinalities are: 0 or 1, exactly 1, 0 or more and 1 or more.
-data Relation = Relation { entity1, entity2 :: Text
-                         , card1,   card2   :: Cardinality
-                         , roptions         :: Options
-                         }
-                deriving (Show, Eq)
+data Relation = Relation
+    { entity1, entity2 :: Text
+    , card1, card2     :: Cardinality
+    , roptions         :: Options
+    }
+    deriving (Show, Eq)
 
 data Cardinality = ZeroOne
-                 | One
-                 | ZeroPlus
-                 | OnePlus deriving (Eq)
+    | One
+    | ZeroPlus
+    | OnePlus
+    deriving (Eq)
 
 instance Show Cardinality where
   show ZeroOne  = "{0,1}"
