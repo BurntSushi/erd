@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-branch=$1
-rev=$2
-
 PACKAGE=stylish-haskell
 echo Downloading and running $PACKAGE...
 
@@ -15,29 +12,30 @@ stl=$TEMP/$PACKAGE-$VERSION/$PACKAGE
 cleanup(){
     rm -r $TEMP
 }
-trap cleanup EXIT
 
 curl --progress-bar --location -o$TEMP/$PACKAGE.tar.gz $URL
 tar -xzf $TEMP/$PACKAGE.tar.gz -C$TEMP
 
-echo "____________"
-repo=erd
-git clone --depth=50 --branch=$branch https://github.com/mmzx/erd.git $repo
-find $repo -name '*.hs' | xargs $stl -i
-pushd $repo
-git checkout $rev
-changed=$(git diff --name-only --diff-filter=d $rev)
-popd
-rm -rf $repo
+shopt -s globstar
+changed=()
+for i in $1/**/*.hs; do
+    $stl "$i" >"$i".tmp              ## To run on CI
+    # stylish-haskell "$i" >"$i".tmp ## To run locally
+    if ! diff -Nau "$i" "$i".tmp
+    then
+        changed+=("$i")
+    fi
+    rm "$i".tmp
+done
 
-if [[ ${#changed[@]} -gt 1 ]]
+if [[ ${#changed[@]} -ne 0 ]]
 then
     echo "_________________________________"
     echo >&2 "Please run 'stylish-haskell':"
-    echo >&2 "stack exec -- stylish-haskell -i" "${changed[@]}"
+    echo >&2 "stylish-haskell -i" "${changed[@]}"
     echo "_________________________________"
     echo "Version of" $($stl --version)
     exit 1
 fi
 
-
+trap cleanup EXIT
