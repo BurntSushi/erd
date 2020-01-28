@@ -169,8 +169,10 @@ player      1--* play_player
 |]
 
 
-data ChunckAST = CE [Entity] | CA [Attribute] | CR [Relation]
-               deriving (Eq)
+data ChunckAST = CE [Entity]
+    | CA [Attribute]
+    | CR [Relation]
+    deriving (Eq)
 
 toAST :: ChunckAST -> [AST]
 toAST (CE x) = map E x

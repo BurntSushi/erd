@@ -23,16 +23,17 @@ import           Text.Parsec.Text.Lazy
 import           Text.Printf           (printf)
 
 data AST = E Entity
-         | A Attribute
-         | R Relation
-         deriving (Show, Eq)
+    | A Attribute
+    | R Relation
+    deriving (Show, Eq)
 
-data GlobalOptions = GlobalOptions { gtoptions :: Options
-                                   , ghoptions :: Options
-                                   , geoptions :: Options
-                                   , groptions :: Options
-                                   }
-                     deriving (Show, Eq)
+data GlobalOptions = GlobalOptions
+    { gtoptions :: Options
+    , ghoptions :: Options
+    , geoptions :: Options
+    , groptions :: Options
+    }
+    deriving (Show, Eq)
 
 emptyGlobalOptions :: GlobalOptions
 emptyGlobalOptions = GlobalOptions M.empty M.empty M.empty M.empty

@@ -7,12 +7,12 @@ module Erd.Render
    withLabelFmt
   ) where
 
-import qualified Erd.ER                        as ER
+import qualified Erd.ER                            as ER
 
-import qualified Data.GraphViz.Attributes.HTML as H
 import qualified Data.GraphViz.Attributes.Complete as A
-import qualified Data.Text.Lazy                as L
-import           Text.Printf                   (printf)
+import qualified Data.GraphViz.Attributes.HTML     as H
+import qualified Data.Text.Lazy                    as L
+import           Text.Printf                       (printf)
 
 -- | Converts a single attribute to an HTML table row.
 htmlAttr :: ER.Attribute -> H.Row

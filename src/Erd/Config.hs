@@ -34,21 +34,22 @@ import           Text.Printf                       (HPrintfType, hPrintf,
 import           Text.RawString.QQ
 
 -- | Config represents all information from command line flags.
-data Config =
-  Config { cin        :: (String, Handle)
-         , cout       :: (String, Handle)
-         , outfmt     :: Maybe G.GraphvizOutput
-         , edgeType   :: Maybe A.EdgeType
-         , configFile :: Maybe FilePath
-         , dotentity  :: Bool
-         }
+data Config = Config
+    { cin        :: (String, Handle)
+    , cout       :: (String, Handle)
+    , outfmt     :: Maybe G.GraphvizOutput
+    , edgeType   :: Maybe A.EdgeType
+    , configFile :: Maybe FilePath
+    , dotentity  :: Bool
+    }
 
 -- | Represents fields that are stored in the configuration file.
 data ConfigFile = ConfigFile
-  { cFmtOut    :: String
-  , cEdgeType  :: String
-  , cDotEntity :: Bool
-  } deriving Show
+    { cFmtOut    :: String
+    , cEdgeType  :: String
+    , cDotEntity :: Bool
+    }
+    deriving Show
 
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
