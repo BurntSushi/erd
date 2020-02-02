@@ -22,13 +22,15 @@ description:
   use of common conventions when depicting entity-relationship diagrams,
   including modeling the cardinality of relationships between entities.
   .
-  A quick example that transforms an `er` file to a PDF:
+
+  A quick example that transforms an `er` file to a PDF is just below. The
+  original source file can be found amongst the examples in the repository.
   .
-  > $ curl 'https://raw.githubusercontent.com/BurntSushi/erd/master/examples/simple.er' > simple.er
   > $ cat simple.er
-  > # Entities are declared in '[' ... ']'. All attributes after the entity header
-  > # up until the end of the file (or the next entity declaration) correspond
-  > # to this entity.
+  > # Entities are declared in '[' ... ']'. All attributes after the
+  > # entity header up until the end of the file (or the next entity
+  > # declaration) correspond to this entity.
+  > # 
   > [Person]
   > *name
   > height
@@ -41,9 +43,9 @@ description:
   > state
   > country
   >
-  > # Each relationship must be between exactly two entities, which need not
-  > # be distinct. Each entity in the relationship has exactly one of four
-  > # possible cardinalities:
+  > # Each relationship must be between exactly two entities, which
+  > # need not be distinct. Each entity in the relationship has
+  > # exactly one of four possible cardinalities:
   > #
   > # Cardinality    Syntax
   > # 0 or 1         0
