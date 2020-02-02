@@ -1,3 +1,7 @@
+0.2.1.0 (2020-02-01)
+
+* Add -v command-line flag to show verions and git revision.
+
 * Support of regular dot-tables to visualize entities. (PR #74)
 
 * Text alignment in a Cell of a Table is explicitly defined. (PR #64)

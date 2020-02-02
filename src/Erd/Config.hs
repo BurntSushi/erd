@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Erd.Config
   ( Config(..)
@@ -18,12 +19,15 @@ import qualified Data.GraphViz.Commands            as G
 import           Data.List                         (dropWhileEnd, intercalate)
 import qualified Data.Map                          as M
 import           Data.Maybe                        (isNothing)
+import           Data.Version                      (showVersion)
 import           Data.Yaml                         (FromJSON (..), (.:))
 import qualified Data.Yaml                         as Y
+import           Development.GitRev                (gitHash)
+import           Paths_erd                         (version)
 import qualified System.Console.GetOpt             as O
 import           System.Directory                  (getHomeDirectory)
 import           System.Environment                (getArgs)
-import           System.Exit                       (exitFailure)
+import           System.Exit                       (exitFailure, exitSuccess)
 import           System.FilePath                   ((</>))
 import           System.IO                         (Handle, IOMode (..),
                                                     openFile, stderr, stdin,
@@ -178,6 +182,8 @@ opts =
                     return $ c { dotentity = True } ))
       ("When set, output will consist of regular dot tables instead of HTML tables.\n"
       ++ "Formatting will be disabled. Use only for further manual configuration.")
+  , O.Option "v" ["version"]
+      (O.NoArg $ const erdVersion) "Shows version of application and revision code.."
   ]
 
 toConfig :: ConfigFile -> Config
@@ -251,7 +257,12 @@ usageExit :: IO a
 usageExit = usage >> exitFailure
 
 usage :: IO ()
-usage = ef "%s\n" $ O.usageInfo "Usage: erd [flags]" opts
+usage = hPrintf stderr "%s\n" $ O.usageInfo "Usage: erd [flags]" opts
+
+erdVersion :: IO a
+erdVersion = do
+  hPrintf stdout "erd-%s %s\n" (showVersion version) ($(gitHash) :: String)
+  exitSuccess
 
 ef :: HPrintfType r => String -> r
 ef = hPrintf stderr
