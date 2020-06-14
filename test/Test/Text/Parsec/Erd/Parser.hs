@@ -64,18 +64,18 @@ simpleResult :: (GlobalOptions, [AST])
 simpleResult = (opts, asts) where
   opts = GlobalOptions M.empty M.empty M.empty M.empty
   asts = [
-    E (Entity {name = "Person", attribs = [], hoptions = fromList [], eoptions = fromList []}),
+    E (Entity {name = "Person", attribs = [], hoptions = M.empty, eoptions = M.empty}),
     A (Attribute {field = "name", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "height", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "weight", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "birth date", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "birth_place_id", pk = False, fk = True, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
-    E (Entity {name = "Birth Place", attribs = [], hoptions = fromList [], eoptions = fromList []}),
+    E (Entity {name = "Birth Place", attribs = [], hoptions = M.empty, eoptions = M.empty}),
     A (Attribute {field = "id", pk = True, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "birth city", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "birth state", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
     A (Attribute {field = "birth country", pk = False, fk = False, aoptions = fromList [("text-alignment",TextAlignment H.HLeft)]}),
-    R (Relation {entity1 = "Person", entity2 = "Birth Place", card1 = ZeroPlus , card2 = One, roptions = fromList []})]
+    R (Relation {entity1 = "Person", entity2 = "Birth Place", card1 = ZeroPlus , card2 = One, roptions = M.empty})]
 
 nfldbText :: Text
 nfldbText = [r|
@@ -181,7 +181,7 @@ toAST (CR x) = map R x
 
 nfldbResult :: (GlobalOptions, [AST])
 nfldbResult = (opts, asts) where
-  opts = GlobalOptions {gtoptions = fromList [("label",Label "nfldb Entity-Relationship diagram (condensed)"),("size",FontSize 20.0)], ghoptions = fromList [], geoptions = fromList [], groptions = fromList []}
+  opts = GlobalOptions {gtoptions = fromList [("label",Label "nfldb Entity-Relationship diagram (condensed)"),("size",FontSize 20.0)], ghoptions = M.empty, geoptions = M.empty, groptions = M.empty}
   asts = concatMap toAST $ es:(attributes ++ [relations])
   es = CE [
     Entity {name = "player", attribs = [],
@@ -267,16 +267,16 @@ nfldbResult = (opts, asts) where
       ]
     ]
   relations = CR [
-     Relation {entity1 = "player", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList []},
+     Relation {entity1 = "player", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = M.empty},
      Relation {entity1 = "game", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList [("label",Label "home")]},
      Relation {entity1 = "game", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList [("label",Label "away")]},
-     Relation {entity1 = "drive", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList []},
-     Relation {entity1 = "play", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList []},
-     Relation {entity1 = "play_player", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = fromList []},
-     Relation {entity1 = "game", entity2 = "drive", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "game", entity2 = "play", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "game", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "drive", entity2 = "play", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "drive", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "play", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []},
-     Relation {entity1 = "player", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = fromList []} ]
+     Relation {entity1 = "drive", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = M.empty},
+     Relation {entity1 = "play", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = M.empty},
+     Relation {entity1 = "play_player", entity2 = "team", card1 = ZeroPlus, card2 = One, roptions = M.empty},
+     Relation {entity1 = "game", entity2 = "drive", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "game", entity2 = "play", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "game", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "drive", entity2 = "play", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "drive", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "play", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = M.empty},
+     Relation {entity1 = "player", entity2 = "play_player", card1 = One, card2 = ZeroPlus, roptions = M.empty} ]
