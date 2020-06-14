@@ -12,7 +12,7 @@ category:            Database, Development
 build-type:          Simple
 cabal-version:       >=1.10
 
-Tested-With:         GHC ==8.6.4 || ==8.4.4
+Tested-With:         GHC ==8.6.4 || ==8.4.4 || ==8.8.3
 
 synopsis:
   An entity-relationship diagram generator from a plain text description.
