@@ -2,9 +2,13 @@
 #
 #   haskell-ci './erd.cabal' '--output' './.travis-new.yml'
 #
+# To regenerate the script (for example after adjusting tested-with) run
+#
+#   haskell-ci regenerate
+#
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.9.20191213
+# version: 0.10.2
 #
 version: ~> 1.0
 language: c
@@ -29,11 +33,14 @@ before_cache:
   - rm -rfv $CABALHOME/packages/head.hackage
 jobs:
   include:
+    - compiler: ghc-8.8.3
+      addons: {"apt":{"sources":[{"sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main","key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286"}],"packages":["ghc-8.8.3","cabal-install-3.2"]}}
+      os: linux
     - compiler: ghc-8.6.4
-      addons: {"apt":{"sources":[{"sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main","key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286"}],"packages":["ghc-8.6.4","cabal-install-3.0"]}}
+      addons: {"apt":{"sources":[{"sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main","key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286"}],"packages":["ghc-8.6.4","cabal-install-3.2"]}}
       os: linux
     - compiler: ghc-8.4.4
-      addons: {"apt":{"sources":[{"sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main","key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286"}],"packages":["ghc-8.4.4","cabal-install-3.0"]}}
+      addons: {"apt":{"sources":[{"sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu xenial main","key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286"}],"packages":["ghc-8.4.4","cabal-install-3.2"]}}
       os: linux
 before_install:
   - HC=$(echo "/opt/$CC/bin/ghc" | sed 's/-/\//')
@@ -47,57 +54,31 @@ before_install:
   - TOP=$(pwd)
   - "HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\\d+)\\.(\\d+)\\.(\\d+)(\\.(\\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')"
   - echo $HCNUMVER
-  - CABAL="$CABAL -vnormal+nowrap+markoutput"
+  - CABAL="$CABAL -vnormal+nowrap"
   - set -o pipefail
-  - |
-    echo 'function blue(s) { printf "\033[0;34m" s "\033[0m " }'           >> .colorful.awk
-    echo 'BEGIN { state = "output"; }'                                     >> .colorful.awk
-    echo '/^-----BEGIN CABAL OUTPUT-----$/ { state = "cabal" }'            >> .colorful.awk
-    echo '/^-----END CABAL OUTPUT-----$/ { state = "output" }'             >> .colorful.awk
-    echo '!/^(-----BEGIN CABAL OUTPUT-----|-----END CABAL OUTPUT-----)/ {' >> .colorful.awk
-    echo '  if (state == "cabal") {'                                       >> .colorful.awk
-    echo '    print blue($0)'                                              >> .colorful.awk
-    echo '  } else {'                                                      >> .colorful.awk
-    echo '    print $0'                                                    >> .colorful.awk
-    echo '  }'                                                             >> .colorful.awk
-    echo '}'                                                               >> .colorful.awk
-  - cat .colorful.awk
-  - |
-    color_cabal_output () {
-      awk -f $TOP/.colorful.awk
-    }
-  - echo text | color_cabal_output
-install:
-  - ${CABAL} --version
-  - echo "$(${HC} --version) [$(${HC} --print-project-git-commit-id 2> /dev/null || echo '?')]"
   - TEST=--enable-tests
   - BENCH=--enable-benchmarks
   - HEADHACKAGE=false
   - rm -f $CABALHOME/config
   - |
-    echo "verbose: normal +nowrap +markoutput"                                  >> $CABALHOME/config
-    echo "remote-build-reporting: anonymous"                                    >> $CABALHOME/config
-    echo "write-ghc-environment-files: always"                                  >> $CABALHOME/config
-    echo "remote-repo-cache: $CABALHOME/packages"                               >> $CABALHOME/config
-    echo "logs-dir:          $CABALHOME/logs"                                   >> $CABALHOME/config
-    echo "world-file:        $CABALHOME/world"                                  >> $CABALHOME/config
-    echo "extra-prog-path:   $CABALHOME/bin"                                    >> $CABALHOME/config
-    echo "symlink-bindir:    $CABALHOME/bin"                                    >> $CABALHOME/config
-    echo "installdir:        $CABALHOME/bin"                                    >> $CABALHOME/config
-    echo "build-summary:     $CABALHOME/logs/build.log"                         >> $CABALHOME/config
-    echo "store-dir:         $CABALHOME/store"                                  >> $CABALHOME/config
-    echo "install-dirs user"                                                    >> $CABALHOME/config
-    echo "  prefix: $CABALHOME"                                                 >> $CABALHOME/config
-    echo "repository hackage.haskell.org"                                       >> $CABALHOME/config
-    echo "  url: http://hackage.haskell.org/"                                   >> $CABALHOME/config
-    echo "  secure: True"                                                       >> $CABALHOME/config
-    echo "  key-threshold: 3"                                                   >> $CABALHOME/config
-    echo "  root-keys:"                                                         >> $CABALHOME/config
-    echo "    fe331502606802feac15e514d9b9ea83fee8b6ffef71335479a2e68d84adc6b0" >> $CABALHOME/config
-    echo "    1ea9ba32c526d1cc91ab5e5bd364ec5e9e8cb67179a471872f6e26f0ae773d42" >> $CABALHOME/config
-    echo "    2c6c3627bd6c982990239487f1abd02e08a02e6cf16edb105a8012d444d870c3" >> $CABALHOME/config
-    echo "    0a5c7ea47cd1b15f01f5f51a33adda7e655bc0f0b0615baa8e271f4c3351e21d" >> $CABALHOME/config
-    echo "    51f0161b906011b52c6613376b1ae937670da69322113a246a09f807c62f6921" >> $CABALHOME/config
+    echo "verbose: normal +nowrap +markoutput"          >> $CABALHOME/config
+    echo "remote-build-reporting: anonymous"            >> $CABALHOME/config
+    echo "write-ghc-environment-files: always"          >> $CABALHOME/config
+    echo "remote-repo-cache: $CABALHOME/packages"       >> $CABALHOME/config
+    echo "logs-dir:          $CABALHOME/logs"           >> $CABALHOME/config
+    echo "world-file:        $CABALHOME/world"          >> $CABALHOME/config
+    echo "extra-prog-path:   $CABALHOME/bin"            >> $CABALHOME/config
+    echo "symlink-bindir:    $CABALHOME/bin"            >> $CABALHOME/config
+    echo "installdir:        $CABALHOME/bin"            >> $CABALHOME/config
+    echo "build-summary:     $CABALHOME/logs/build.log" >> $CABALHOME/config
+    echo "store-dir:         $CABALHOME/store"          >> $CABALHOME/config
+    echo "install-dirs user"                            >> $CABALHOME/config
+    echo "  prefix: $CABALHOME"                         >> $CABALHOME/config
+    echo "repository hackage.haskell.org"               >> $CABALHOME/config
+    echo "  url: http://hackage.haskell.org/"           >> $CABALHOME/config
+install:
+  - ${CABAL} --version
+  - echo "$(${HC} --version) [$(${HC} --print-project-git-commit-id 2> /dev/null || echo '?')]"
   - |
     echo "program-default-options"                >> $CABALHOME/config
     echo "  ghc-options: $GHCJOBS +RTS -M6G -RTS" >> $CABALHOME/config
@@ -109,20 +90,22 @@ install:
   - touch cabal.project
   - |
     echo "packages: ." >> cabal.project
+  - echo 'package erd' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - |
   - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(erd)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
   - cat cabal.project || true
   - cat cabal.project.local || true
   - if [ -f "./configure.ac" ]; then (cd "." && autoreconf -i); fi
-  - ${CABAL} v2-freeze $WITHCOMPILER ${TEST} ${BENCH} | color_cabal_output
+  - ${CABAL} v2-freeze $WITHCOMPILER ${TEST} ${BENCH}
   - "cat cabal.project.freeze | sed -E 's/^(constraints: *| *)//' | sed 's/any.//'"
   - rm  cabal.project.freeze
-  - ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} --dep -j2 all | color_cabal_output
-  - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks --dep -j2 all | color_cabal_output
+  - travis_wait 40 ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} --dep -j2 all
+  - travis_wait 40 ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks --dep -j2 all
 script:
   - DISTDIR=$(mktemp -d /tmp/dist-test.XXXX)
   # Packaging...
-  - ${CABAL} v2-sdist all | color_cabal_output
+  - ${CABAL} v2-sdist all
   # Unpacking...
   - mv dist-newstyle/sdist/*.tar.gz ${DISTDIR}/
   - cd ${DISTDIR} || false
@@ -134,24 +117,25 @@ script:
   - touch cabal.project
   - |
     echo "packages: ${PKGDIR_erd}" >> cabal.project
+  - echo 'package erd' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - |
   - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(erd)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
   - cat cabal.project || true
   - cat cabal.project.local || true
   # Building...
   # this builds all libraries and executables (without tests/benchmarks)
-  - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all | color_cabal_output
+  - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all
   # Building with tests and benchmarks...
   # build & run tests, build benchmarks
-  - ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} all | color_cabal_output
+  - ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} all
   # Testing...
-  - ${CABAL} v2-test $WITHCOMPILER ${TEST} ${BENCH} all | color_cabal_output
+  - ${CABAL} v2-test $WITHCOMPILER ${TEST} ${BENCH} all
   # cabal check...
   - (cd ${PKGDIR_erd} && ${CABAL} -vnormal check)
   # Building without installed constraints for packages in global-db...
   - rm -f cabal.project.local
-  - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all | color_cabal_output
-  - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
-  - ${TOP}/exec_CodeStyling.sh ${PKGDIR_erd}
-# REGENDATA ("0.9.20191213",["./erd.cabal","--output","./.travis-new.yml"])
+  - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all
+
+# REGENDATA ("0.10.2",["./erd.cabal","--output","./.travis-new.yml"])
 # EOF
