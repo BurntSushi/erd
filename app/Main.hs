@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main
   (main)
 where
@@ -15,7 +16,6 @@ import           Data.GraphViz
 import qualified Data.GraphViz.Attributes.Colors.X11 as C
 import qualified Data.GraphViz.Attributes.Complete   as A
 import qualified Data.GraphViz.Attributes.HTML       as H
-import           Data.GraphViz.Commands              (isGraphvizInstalled)
 import qualified Data.GraphViz.Types.Generalised     as G
 import           Data.GraphViz.Types.Monadic
 
