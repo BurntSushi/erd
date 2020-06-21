@@ -26,6 +26,16 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 All of these are available for Windows, Mac and Linux.
 
+#### Docker
+
+An example command to use _erd_ in a _docker_ container.
+```
+erdtag="0.2.1.0"; docker build -t erd:$erdtag . && docker run -it erd:$erdtag "erd -h"
+```
+Where:
+- you shall specify your _erdtag_, that will help identifying the docker image to be created;
+- instead of using `erd -h` invoke _erd_ the way you need to.
+
 #### Stack
 
 Install the [Stack](http://docs.haskellstack.org/en/stable/README/) build tool,
