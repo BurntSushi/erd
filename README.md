@@ -28,9 +28,9 @@ All of these are available for Windows, Mac and Linux.
 
 #### Docker
 
-An example command to use _erd_ in a _docker_ container.
+An example command to use _erd_ in a _docker_ container, once this repository is successfully cloned.
 ```
-erdtag="0.2.1.0"; docker build -t erd:$erdtag . && docker run -it erd:$erdtag "erd -h"
+erdtag="0.2.1.0"; cd erd && docker build -t erd:$erdtag . && docker run -it erd:$erdtag "erd -h"
 ```
 Where:
 - you shall specify your _erdtag_, that will help identifying the docker image to be created;
