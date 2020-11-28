@@ -30,11 +30,14 @@ All of these are available for Windows, Mac and Linux.
 
 An example command to use _erd_ in a _docker_ container, once this repository is successfully cloned.
 ```
-erdtag="0.2.1.0"; cd erd && docker build -t erd:$erdtag . && docker run -it erd:$erdtag "erd -h"
+erdtag="0.2.1.0"; cd erd && docker build -t erd:$erdtag . && docker run -it erd:$erdtag "--help"
 ```
 Where:
 - you shall specify your _erdtag_, that will help identifying the docker image to be created;
-- instead of using `erd -h` invoke _erd_ the way you need to.
+- instead of using `--help` invoke _erd_ the way you need to i.e.:
+  ```
+  docker run -i erd:$erdtag "--dot-entity" < examples/nfldb.er > out.pdf
+  ```
 
 #### Stack
 
