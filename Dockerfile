@@ -1,6 +1,6 @@
 # NB OSX users: You may encounter docker "memory error" like
 #
-# ````
+# ```
 # The build process was killed (i.e. SIGKILL). The typical reason for this is
 # that there is not enough memory available (e.g. the OS killed a process using
 # lots of memory).
