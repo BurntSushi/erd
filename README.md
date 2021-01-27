@@ -26,6 +26,14 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 All of these are available for Windows, Mac and Linux.
 
+#### MacPorts
+
+`erd` is available in MacPorts as a one-shot install (GraphViz will be set up correctly for you):
+
+```
+port install erd
+```
+
 #### Docker
 
 An example command to use _erd_ in a _docker_ container, once this repository is successfully cloned.
