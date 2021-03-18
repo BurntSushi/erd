@@ -445,7 +445,7 @@ The format of the `er` file is inspired by the file format used by the project
 [erwiz](https://github.com/slopjong/Erwiz) (which looks abandoned). The `er`
 format is a bit more lightweight, but its general structure is similar.
 
-Similar software that that translates a plain text description of a relational
+Similar software that translates a plain text description of a relational
 schema to a graphical visualization (the list may be incomplete and some of 
 the listed projects are no longer maintained):
 
