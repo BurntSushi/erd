@@ -456,6 +456,7 @@ the listed projects are no longer maintained):
   * [erdm](https://github.com/unok/erdm)
   * [erd](https://github.com/k-kawa/erd)
 * Java
+  * [erwiz](https://github.com/slopjong/Erwiz)
   * [PlantUML](https://github.com/plantuml/plantuml)'s
     [ERD syntax](https://plantuml.com/ie-diagram)
 * JavaScript
@@ -469,4 +470,9 @@ the listed projects are no longer maintained):
 * Propertiary, web-based tools:
   * [dbdiagram.io](https://dbdiagram.io/d)
   * [quickdatabasediagrams.com](https://app.quickdatabasediagrams.com/#/)
-  
+
+### Text editor support
+
+* [Vim syntax file](https://github.com/flniu/er.vim) for the `er` file format.
+* [Visual Studio Code ERD preview](https://github.com/kaishuu0123/vscode-erd)
+* [Visual Studio Code syntax highlighting](https://github.com/mikkel-ol/vsc-er-syntax-highlighting)
