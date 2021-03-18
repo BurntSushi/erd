@@ -43,15 +43,19 @@ main = do
 
 -- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
 dotER :: Config -> ER -> G.DotGraph L.Text
-dotER conf er = graph' $ do
+dotER conf er =
+  let
+    unsafeFromConfigOrDefault :: (Config -> Maybe a) -> a
+    unsafeFromConfigOrDefault opt = fromJust $ opt conf <|> opt defaultConfig
+  in graph' $ do
   graphAttrs (graphTitle $ title er)
   graphAttrs [ A.RankDir A.FromLeft
-             , A.Splines $ fromMaybe (fromJust . edgeType $ defaultConfig) (edgeType conf)
+             , A.Splines $ unsafeFromConfigOrDefault edgeType
              ]
   nodeAttrs nodeGlobalAttributes
   edgeAttrs [ A.Color [A.toWC $ A.toColor C.Gray50] -- easier to read labels
             , A.MinLen 2 -- give some breathing room
-            , A.Style [A.SItem A.Dashed []] -- easier to read labels, maybe?
+            , A.Style [A.SItem (unsafeFromConfigOrDefault edgePattern) [] ]
             ]
   forM_ (entities er) $ \e ->
     node (name e) [entityFmt e]
