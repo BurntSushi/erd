@@ -441,12 +441,32 @@ a file extension:
 
 ### Similar software
 
-Surprisingly, the only other software I'm aware of that translates a plain text
-description of a relational schema to a graphical visualization is
-[erwiz](https://github.com/slopjong/Erwiz). The project appears to be
-abandoned.
+The format of the `er` file is inspired by the file format used by the project
+[erwiz](https://github.com/slopjong/Erwiz) (which looks abandoned). The `er`
+format is a bit more lightweight, but its general structure is similar.
 
-If you've used `erwiz` before, you'll notice that the format of the `er` file
-is inspired by it. The `er` format is a bit more lightweight, but its general
-structure is similar.
+Similar software that that translates a plain text description of a relational
+schema to a graphical visualization (the list may be incomplete and some of 
+the listed projects are no longer maintained):
 
+* C#
+  * [erd-dotnet](https://github.com/frolic06/erd-dotnet)
+* Go
+  * [erd-go](https://github.com/kaishuu0123/erd-go/)
+  * [erdm](https://github.com/unok/erdm)
+  * [erd](https://github.com/k-kawa/erd)
+* Java
+  * [PlantUML](https://github.com/plantuml/plantuml)'s
+    [ERD syntax](https://plantuml.com/ie-diagram)
+* JavaScript
+  * [t2erd](https://github.com/dosaki/t2erd)
+* Python
+  * [ERDot](https://github.com/ehne/ERDot)
+* Ruby
+  * [text_to_diagram](https://github.com/japgolly/text_to_diagram)
+* Rust
+  * [erd-rs](https://github.com/davechallis/erd-rs)
+* Propertiary, web-based tools:
+  * [dbdiagram.io](https://dbdiagram.io/d)
+  * [quickdatabasediagrams.com](https://app.quickdatabasediagrams.com/#/)
+  
