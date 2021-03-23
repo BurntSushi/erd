@@ -20,7 +20,7 @@ import           Data.List                         (dropWhileEnd, intercalate)
 import qualified Data.Map                          as M
 import           Data.Maybe                        (isNothing)
 import           Data.Version                      (showVersion)
-import           Data.Yaml                         (FromJSON (..), (.:))
+import           Data.Yaml                         (FromJSON (..), (.:?))
 import qualified Data.Yaml                         as Y
 import           Development.GitRev                (gitHash)
 import           Paths_erd                         (version)
@@ -44,26 +44,26 @@ data Config = Config
     , outfmt      :: Maybe G.GraphvizOutput
     , edgeType    :: Maybe A.EdgeType
     , configFile  :: Maybe FilePath
-    , dotentity   :: Bool
+    , dotentity   :: Maybe Bool
     , edgePattern :: Maybe A.StyleName
     }
 
 -- | Represents fields that are stored in the configuration file.
 data ConfigFile = ConfigFile
-    { cFmtOut      :: String
-    , cEdgeType    :: String
-    , cDotEntity   :: Bool
-    , cEdgePattern :: String
+    { cFmtOut      :: Maybe String
+    , cEdgeType    :: Maybe String
+    , cDotEntity   :: Maybe Bool
+    , cEdgePattern :: Maybe String
     }
     deriving Show
 
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
     ConfigFile <$>
-    v .: "output-format" <*>
-    v .: "edge-style" <*>
-    v .: "dot-entity" <*>
-    v .: "edge-pattern"
+    v .:? "output-format" <*>
+    v .:? "edge-style" <*>
+    v .:? "dot-entity" <*>
+    v .:? "edge-pattern"
   parseJSON _ = fail "Incorrect configuration file."
 
 defaultConfig :: Config
@@ -73,7 +73,7 @@ defaultConfig =
          , outfmt = Nothing
          , edgeType = Just A.SplineEdges
          , configFile = Nothing
-         , dotentity = False
+         , dotentity = Just False
          , edgePattern = Just A.Dashed
          }
 
@@ -193,7 +193,7 @@ opts =
   , O.Option "d" ["dot-entity"]
       (O.NoArg (\cIO -> do
                     c <- cIO
-                    return $ c { dotentity = True } ))
+                    return $ c { dotentity = Just True } ))
       ("When set, output will consist of regular dot tables instead of HTML tables.\n"
       ++ "Formatting will be disabled. Use only for further manual configuration.")
   , O.Option "v" ["version"]
@@ -204,10 +204,10 @@ opts =
     descriptionWithValuesList txt m = printf (txt++":\n%s.") (intercalate ", " $ M.keys m)
 
 toConfig :: ConfigFile -> Config
-toConfig c = defaultConfig {outfmt      = toGraphFmt $ cFmtOut c,
-                            edgeType    = toEdgeG $ cEdgeType c,
+toConfig c = defaultConfig {outfmt      = cFmtOut c >>= toGraphFmt,
+                            edgeType    = cEdgeType c >>= toEdgeG,
                             dotentity   = cDotEntity c,
-                            edgePattern = toEdgePattern $ cEdgePattern c}
+                            edgePattern = cEdgePattern c >>= toEdgePattern}
 
 -- | Reads and parses configuration file at default location: ~/.erd.yaml
 readGlobalConfigFile :: IO (Maybe ConfigFile)

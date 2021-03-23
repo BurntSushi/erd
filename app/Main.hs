@@ -43,11 +43,7 @@ main = do
 
 -- | Converts an entire ER-diagram from an ER file into a GraphViz graph.
 dotER :: Config -> ER -> G.DotGraph L.Text
-dotER conf er =
-  let
-    unsafeFromConfigOrDefault :: (Config -> Maybe a) -> a
-    unsafeFromConfigOrDefault opt = fromJust $ opt conf <|> opt defaultConfig
-  in graph' $ do
+dotER conf er = graph' $ do
   graphAttrs (graphTitle $ title er)
   graphAttrs [ A.RankDir A.FromLeft
              , A.Splines $ unsafeFromConfigOrDefault edgeType
@@ -65,12 +61,15 @@ dotER conf er =
         (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
         label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
     edge (entity1 r) (entity2 r) [label, l1, l2]
-    where nodeGlobalAttributes
-            | dotentity conf = [shape Record, A.RankDir A.FromTop]
-            | otherwise = [shape PlainText] -- recommended for HTML labels
-          entityFmt
-            | dotentity conf = toLabel . dotEntity
-            | otherwise = toLabel . htmlEntity
+    where
+      unsafeFromConfigOrDefault :: (Config -> Maybe a) -> a
+      unsafeFromConfigOrDefault opt = fromJust $ opt conf <|> opt defaultConfig
+      nodeGlobalAttributes
+        | unsafeFromConfigOrDefault dotentity = [shape Record, A.RankDir A.FromTop]
+        | otherwise = [shape PlainText] -- recommended for HTML labels
+      entityFmt
+        | unsafeFromConfigOrDefault dotentity = toLabel . dotEntity
+        | otherwise = toLabel . htmlEntity
 
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
