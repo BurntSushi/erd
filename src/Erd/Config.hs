@@ -57,6 +57,10 @@ data ConfigFile = ConfigFile
     }
     deriving Show
 
+-- | A ConfigFile with all fields initialized with Nothing.
+emptyConfigFile :: ConfigFile
+emptyConfigFile = ConfigFile Nothing Nothing Nothing Nothing
+
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
     ConfigFile <$>
@@ -64,6 +68,7 @@ instance FromJSON ConfigFile where
     v .:? "edge-style" <*>
     v .:? "dot-entity" <*>
     v .:? "edge-pattern"
+  parseJSON Y.Null = return emptyConfigFile
   parseJSON _ = fail "Incorrect configuration file."
 
 defaultConfig :: Config
