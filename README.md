@@ -446,7 +446,7 @@ The format of the `er` file is inspired by the file format used by the project
 format is a bit more lightweight, but its general structure is similar.
 
 Similar software that translates a plain text description of a relational
-schema to a graphical visualization (the list may be incomplete and some of 
+schema to a graphical visualization (the list may be incomplete and some of
 the listed projects are no longer maintained):
 
 * C#
@@ -461,6 +461,8 @@ the listed projects are no longer maintained):
     [ERD syntax](https://plantuml.com/ie-diagram)
 * JavaScript
   * [t2erd](https://github.com/dosaki/t2erd)
+  * [mermaid](https://github.com/mermaid-js/mermaid)'s
+    [ERD syntax](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
 * Python
   * [ERDot](https://github.com/ehne/ERDot)
 * Ruby
