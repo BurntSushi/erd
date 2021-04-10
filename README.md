@@ -11,11 +11,10 @@ eps, png, jpg, plain text and dot.
 Here's an example of the output produced by `erd` (click on it for a larger PDF
 version):
 
-[![ER diagram for nfldb](http://burntsushi.net/stuff/erd/example-nfldb.png)](http://burntsushi.net/stuff/erd/example-nfldb.pdf)
+[![ER diagram for nfldb](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.png)](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.pdf)
 
 The [corresponding `er` file is in the `examples`
 directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
-
 
 ### Installation
 
@@ -133,7 +132,7 @@ $ erd -i simple.er -o simple.pdf
 
 The PDF should now contain a graph that looks like this:
 
-![Simple erd example graph](http://burntsushi.net/stuff/erd-example-simple.png)
+![Simple erd example graph](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/simple.png)
 
 ### Available command-line options
 
@@ -260,7 +259,7 @@ weight
 Which looks like:
 
 ![example of changing background
-color](http://burntsushi.net/stuff/erd/example-bgcolor.png)
+color](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/bgcolor.png)
 
 Alternatively, you can specify the background color of every entity with a
 special directive at the top of the file:
