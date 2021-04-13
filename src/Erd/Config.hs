@@ -206,7 +206,7 @@ opts =
   ]
   where
     descriptionWithValuesList :: String -> M.Map String a -> String
-    descriptionWithValuesList txt m = printf (txt++":\n%s.") (intercalate ", " $ M.keys m)
+    descriptionWithValuesList txt m = printf (txt <> ":\n%s.") (intercalate ", " $ M.keys m)
 
 toConfig :: ConfigFile -> Config
 toConfig c = defaultConfig {outfmt      = cFmtOut c >>= toGraphFmt,
