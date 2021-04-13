@@ -91,6 +91,7 @@ executable erd
                , bytestring == 0.10.*
                , yaml >= 0.8.32
                , raw-strings-qq >= 1.1
+               , with-utf8
 
 test-suite spec
   default-language: Haskell2010

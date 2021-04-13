@@ -10,7 +10,7 @@ import qualified Data.ByteString                     as SB
 import           Data.Maybe                          (fromJust, fromMaybe)
 import qualified Data.Text.Lazy                      as L
 import           System.Exit                         (exitFailure)
-import           System.IO                           (hClose, hPutStrLn, stderr)
+import           System.IO                           (hClose, hPutStrLn, stderr, stdout, stdin, hSetEncoding, utf8, hFlush)
 
 import           Data.GraphViz
 import qualified Data.GraphViz.Attributes.Colors.X11 as C
@@ -24,10 +24,19 @@ import           Erd.ER
 import           Erd.Parse
 import           Erd.Render                          (htmlAttr, htmlFont,
                                                       recordAttr, withLabelFmt)
+import qualified System.IO.Utf8 as Utf8
 
 main :: IO ()
 main = do
   checkRequirements -- application may terminate here
+-- ________
+  print "yoooo"
+  -- mapM_ hFlush [stdin, stdout]
+  -- mapM_ (`hSetEncoding` utf8) [stdin, stdout]
+  Utf8.setHandleEncoding stdin
+  Utf8.setHandleEncoding stdout
+  print "yoooolooooo"
+-- ________
   conf <- configIO
   er' <- uncurry loadER (cin conf)
   case er' of
