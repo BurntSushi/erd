@@ -20,7 +20,7 @@ import           Data.List                         (dropWhileEnd, intercalate)
 import qualified Data.Map                          as M
 import           Data.Maybe                        (isNothing)
 import           Data.Version                      (showVersion)
-import           Data.Yaml                         (FromJSON (..), (.:))
+import           Data.Yaml                         (FromJSON (..), (.:?))
 import qualified Data.Yaml                         as Y
 import           Development.GitRev                (gitHash)
 import           Paths_erd                         (version)
@@ -39,28 +39,36 @@ import           Text.RawString.QQ
 
 -- | Config represents all information from command line flags.
 data Config = Config
-    { cin        :: (String, Handle)
-    , cout       :: (String, Handle)
-    , outfmt     :: Maybe G.GraphvizOutput
-    , edgeType   :: Maybe A.EdgeType
-    , configFile :: Maybe FilePath
-    , dotentity  :: Bool
+    { cin         :: (String, Handle)
+    , cout        :: (String, Handle)
+    , outfmt      :: Maybe G.GraphvizOutput
+    , edgeType    :: Maybe A.EdgeType
+    , configFile  :: Maybe FilePath
+    , dotentity   :: Maybe Bool
+    , edgePattern :: Maybe A.StyleName
     }
 
 -- | Represents fields that are stored in the configuration file.
 data ConfigFile = ConfigFile
-    { cFmtOut    :: String
-    , cEdgeType  :: String
-    , cDotEntity :: Bool
+    { cFmtOut      :: Maybe String
+    , cEdgeType    :: Maybe String
+    , cDotEntity   :: Maybe Bool
+    , cEdgePattern :: Maybe String
     }
     deriving Show
+
+-- | A ConfigFile with all fields initialized with Nothing.
+emptyConfigFile :: ConfigFile
+emptyConfigFile = ConfigFile Nothing Nothing Nothing Nothing
 
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
     ConfigFile <$>
-    v .: "output-format" <*>
-    v .: "edge-style" <*>
-    v .: "dot-entity"
+    v .:? "output-format" <*>
+    v .:? "edge-style" <*>
+    v .:? "dot-entity" <*>
+    v .:? "edge-pattern"
+  parseJSON Y.Null = return emptyConfigFile
   parseJSON _ = fail "Incorrect configuration file."
 
 defaultConfig :: Config
@@ -70,7 +78,8 @@ defaultConfig =
          , outfmt = Nothing
          , edgeType = Just A.SplineEdges
          , configFile = Nothing
-         , dotentity = False
+         , dotentity = Just False
+         , edgePattern = Just A.Dashed
          }
 
 defaultConfigFile :: B.ByteString
@@ -78,7 +87,8 @@ defaultConfigFile = B.unlines
   [[r|# Erd (~/.erd.yaml) default configuration file.|],
    B.append [r|output-format: pdf           # Supported formats: |] (defVals fmts),
    B.append [r|edge-style: spline           # Supported values : |] (defVals edges),
-   B.append [r|dot-entity: false            # Supported values : |] (defVals valBool)
+   B.append [r|dot-entity: false            # Supported values : |] (defVals valBool),
+   B.append [r|edge-pattern: dashed         # Supported values : |] (defVals edgePatterns)
   ]
   where
     defVals = B.pack . unwords . M.keys
@@ -161,8 +171,7 @@ opts =
                       Just gfmt -> return c {outfmt = Just gfmt}
                 )
                 "FMT")
-      (printf "Force the output format to one of:\n%s"
-              (intercalate ", " $ M.keys fmts))
+      (descriptionWithValuesList "Force the output format to one of" fmts)
   , O.Option "e" ["edge"]
       (O.ReqArg (\edge cIO -> do
                     c <- cIO
@@ -174,22 +183,36 @@ opts =
                       Just x -> return c {edgeType = Just x}
                 )
                 "EDGE")
-      (printf "Select one type of edge:\n%s"
-              (intercalate ", " $ M.keys edges))
+      (descriptionWithValuesList "Select one type of edge" edges)
+  , O.Option "p" ["edge-pattern"]
+      (O.ReqArg (\epat cIO -> do
+                    c <- cIO
+                    case toEdgePattern epat of
+                      Nothing -> do
+                        ef "'%s' is not a valid type of edge pattern." epat
+                        exitFailure
+                      Just x -> return c {edgePattern = Just x}
+                )
+                "PATTERN")
+      (descriptionWithValuesList "Select one of the edge patterns" edgePatterns)
   , O.Option "d" ["dot-entity"]
       (O.NoArg (\cIO -> do
                     c <- cIO
-                    return $ c { dotentity = True } ))
+                    return $ c { dotentity = Just True } ))
       ("When set, output will consist of regular dot tables instead of HTML tables.\n"
       ++ "Formatting will be disabled. Use only for further manual configuration.")
   , O.Option "v" ["version"]
-      (O.NoArg $ const erdVersion) "Shows version of application and revision code.."
+      (O.NoArg $ const erdVersion) "Shows version of application and revision code."
   ]
+  where
+    descriptionWithValuesList :: String -> M.Map String a -> String
+    descriptionWithValuesList txt m = printf (txt <> ":\n%s.") (intercalate ", " $ M.keys m)
 
 toConfig :: ConfigFile -> Config
-toConfig c = defaultConfig {outfmt    = toGraphFmt $ cFmtOut c,
-                            edgeType  = toEdgeG $ cEdgeType c,
-                            dotentity = cDotEntity c }
+toConfig c = defaultConfig {outfmt      = cFmtOut c >>= toGraphFmt,
+                            edgeType    = cEdgeType c >>= toEdgeG,
+                            dotentity   = cDotEntity c,
+                            edgePattern = cEdgePattern c >>= toEdgePattern}
 
 -- | Reads and parses configuration file at default location: ~/.erd.yaml
 readGlobalConfigFile :: IO (Maybe ConfigFile)
@@ -240,6 +263,13 @@ valBool = M.fromList
   [ ("true", True)
   , ("false", False) ]
 
+edgePatterns :: M.Map String (Maybe A.StyleName)
+edgePatterns = M.fromList
+  [ ("solid", Just A.Solid)
+  , ("dashed", Just A.Dashed)
+  , ("dotted", Just A.Dotted)
+  ]
+
 -- | takeExtension returns the last extension from a file path, or the
 -- empty string if no extension was found. e.g., the extension of
 -- "wat.pdf" is "pdf".
@@ -252,6 +282,9 @@ toGraphFmt ext = M.findWithDefault Nothing ext fmts
 
 toEdgeG :: String -> Maybe A.EdgeType
 toEdgeG edge = M.findWithDefault Nothing edge edges
+
+toEdgePattern :: String -> Maybe A.StyleName
+toEdgePattern epat = M.findWithDefault Nothing epat edgePatterns
 
 usageExit :: IO a
 usageExit = usage >> exitFailure
