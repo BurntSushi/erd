@@ -7,6 +7,7 @@ module Erd.Config
   , configIO
   , defaultConfig
   , defaultConfigFile
+  , Notation(..)
   )
 where
 
@@ -37,6 +38,10 @@ import           Text.Printf                       (HPrintfType, hPrintf,
                                                     printf)
 import           Text.RawString.QQ
 
+-- | Notation style for relations.
+data Notation = UML | IE
+  deriving Show
+
 -- | Config represents all information from command line flags.
 data Config = Config
     { cin         :: (String, Handle)
@@ -46,6 +51,7 @@ data Config = Config
     , configFile  :: Maybe FilePath
     , dotentity   :: Maybe Bool
     , edgePattern :: Maybe A.StyleName
+    , notation    :: Maybe Notation
     }
 
 -- | Represents fields that are stored in the configuration file.
@@ -54,12 +60,13 @@ data ConfigFile = ConfigFile
     , cEdgeType    :: Maybe String
     , cDotEntity   :: Maybe Bool
     , cEdgePattern :: Maybe String
+    , cNotation    :: Maybe String
     }
     deriving Show
 
 -- | A ConfigFile with all fields initialized with Nothing.
 emptyConfigFile :: ConfigFile
-emptyConfigFile = ConfigFile Nothing Nothing Nothing Nothing
+emptyConfigFile = ConfigFile Nothing Nothing Nothing Nothing Nothing
 
 instance FromJSON ConfigFile where
   parseJSON (Y.Object v) =
@@ -67,7 +74,8 @@ instance FromJSON ConfigFile where
     v .:? "output-format" <*>
     v .:? "edge-style" <*>
     v .:? "dot-entity" <*>
-    v .:? "edge-pattern"
+    v .:? "edge-pattern" <*>
+    v .:? "notation"
   parseJSON Y.Null = return emptyConfigFile
   parseJSON _ = fail "Incorrect configuration file."
 
@@ -80,6 +88,7 @@ defaultConfig =
          , configFile = Nothing
          , dotentity = Just False
          , edgePattern = Just A.Dashed
+         , notation = Just UML
          }
 
 defaultConfigFile :: B.ByteString
@@ -88,7 +97,8 @@ defaultConfigFile = B.unlines
    B.append [r|output-format: pdf           # Supported formats: |] (defVals fmts),
    B.append [r|edge-style: spline           # Supported values : |] (defVals edges),
    B.append [r|dot-entity: false            # Supported values : |] (defVals valBool),
-   B.append [r|edge-pattern: dashed         # Supported values : |] (defVals edgePatterns)
+   B.append [r|edge-pattern: dashed         # Supported values : |] (defVals edgePatterns),
+   B.append [r|notation: uml                # Supported values : |] (defVals notations)
   ]
   where
     defVals = B.pack . unwords . M.keys
@@ -166,7 +176,7 @@ opts =
                     let mfmt = toGraphFmt fmt
                     case mfmt of
                       Nothing -> do
-                        ef "'%s' is not a valid output format." fmt
+                        ef "'%s' is not a valid output format.\n" fmt
                         exitFailure
                       Just gfmt -> return c {outfmt = Just gfmt}
                 )
@@ -178,7 +188,7 @@ opts =
                     let edgeG = toEdgeG edge
                     case edgeG of
                       Nothing -> do
-                        ef "'%s' is not a valid type of edge." edge
+                        ef "'%s' is not a valid type of edge.\n" edge
                         exitFailure
                       Just x -> return c {edgeType = Just x}
                 )
@@ -189,12 +199,23 @@ opts =
                     c <- cIO
                     case toEdgePattern epat of
                       Nothing -> do
-                        ef "'%s' is not a valid type of edge pattern." epat
+                        ef "'%s' is not a valid type of edge pattern.\n" epat
                         exitFailure
                       Just x -> return c {edgePattern = Just x}
                 )
                 "PATTERN")
       (descriptionWithValuesList "Select one of the edge patterns" edgePatterns)
+  , O.Option "n" ["notation"]
+      (O.ReqArg (\nt cIO -> do
+                    c <- cIO
+                    case toNotation nt of
+                      Nothing -> do
+                        ef "'%s' is not a valid notation style.\n" nt
+                        exitFailure
+                      Just x -> return c {notation = Just x}
+                )
+                "NOTATION")
+      (descriptionWithValuesList "Select one of the notation styles" notations)
   , O.Option "d" ["dot-entity"]
       (O.NoArg (\cIO -> do
                     c <- cIO
@@ -212,7 +233,8 @@ toConfig :: ConfigFile -> Config
 toConfig c = defaultConfig {outfmt      = cFmtOut c >>= toGraphFmt,
                             edgeType    = cEdgeType c >>= toEdgeG,
                             dotentity   = cDotEntity c,
-                            edgePattern = cEdgePattern c >>= toEdgePattern}
+                            edgePattern = cEdgePattern c >>= toEdgePattern,
+                            notation    = cNotation c >>= toNotation}
 
 -- | Reads and parses configuration file at default location: ~/.erd.yaml
 readGlobalConfigFile :: IO (Maybe ConfigFile)
@@ -233,29 +255,29 @@ readConfigFile (Just f) = do
     Right home -> Y.decodeThrow home
 
 -- | A subset of formats supported from GraphViz.
-fmts :: M.Map String (Maybe G.GraphvizOutput)
+fmts :: M.Map String G.GraphvizOutput
 fmts = M.fromList
-  [ ("pdf", Just G.Pdf)
-  , ("svg", Just G.Svg)
-  , ("eps", Just G.Eps)
-  , ("bmp", Just G.Bmp)
-  , ("jpg", Just G.Jpeg)
-  , ("png", Just G.Png)
-  , ("gif", Just G.Gif)
-  , ("tiff", Just G.Tiff)
-  , ("dot", Just G.Canon)
-  , ("ps",  Just G.Ps)
-  , ("ps2", Just G.Ps2)
-  , ("plain", Just G.Plain)
+  [ ("pdf", G.Pdf)
+  , ("svg", G.Svg)
+  , ("eps", G.Eps)
+  , ("bmp", G.Bmp)
+  , ("jpg", G.Jpeg)
+  , ("png", G.Png)
+  , ("gif", G.Gif)
+  , ("tiff", G.Tiff)
+  , ("dot", G.Canon)
+  , ("ps", G.Ps)
+  , ("ps2", G.Ps2)
+  , ("plain", G.Plain)
   ]
 
-edges :: M.Map String (Maybe A.EdgeType)
+edges :: M.Map String A.EdgeType
 edges = M.fromList
-  [ ("spline", Just A.SplineEdges)
-  , ("ortho", Just A.Ortho)
-  , ("noedge", Just A.NoEdges)
-  , ("poly", Just A.PolyLine)
-  , ("compound", Just A.CompoundEdge)
+  [ ("spline", A.SplineEdges)
+  , ("ortho", A.Ortho)
+  , ("noedge", A.NoEdges)
+  , ("poly", A.PolyLine)
+  , ("compound", A.CompoundEdge)
   ]
 
 valBool :: M.Map String Bool
@@ -263,11 +285,17 @@ valBool = M.fromList
   [ ("true", True)
   , ("false", False) ]
 
-edgePatterns :: M.Map String (Maybe A.StyleName)
+edgePatterns :: M.Map String A.StyleName
 edgePatterns = M.fromList
-  [ ("solid", Just A.Solid)
-  , ("dashed", Just A.Dashed)
-  , ("dotted", Just A.Dotted)
+  [ ("solid", A.Solid)
+  , ("dashed", A.Dashed)
+  , ("dotted", A.Dotted)
+  ]
+
+notations :: M.Map String Notation
+notations = M.fromList
+  [ ("uml", UML)
+  , ("ie", IE)
   ]
 
 -- | takeExtension returns the last extension from a file path, or the
@@ -278,13 +306,16 @@ takeExtension s = if null rest then "" else reverse ext
   where (ext, rest) = span (/= '.') $ reverse s
 
 toGraphFmt :: String -> Maybe G.GraphvizOutput
-toGraphFmt ext = M.findWithDefault Nothing ext fmts
+toGraphFmt = (`M.lookup` fmts)
 
 toEdgeG :: String -> Maybe A.EdgeType
-toEdgeG edge = M.findWithDefault Nothing edge edges
+toEdgeG = (`M.lookup` edges)
 
 toEdgePattern :: String -> Maybe A.StyleName
-toEdgePattern epat = M.findWithDefault Nothing epat edgePatterns
+toEdgePattern = (`M.lookup` edgePatterns)
+
+toNotation :: String -> Maybe Notation
+toNotation = (`M.lookup` notations)
 
 usageExit :: IO a
 usageExit = usage >> exitFailure

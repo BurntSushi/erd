@@ -55,12 +55,7 @@ dotER conf er = graph' $ do
             ]
   forM_ (entities er) $ \e ->
     node (name e) [entityFmt e]
-  forM_ (rels er) $ \r -> do
-    let optss    = roptions r
-        rlab     = A.HtmlLabel . H.Text . htmlFont optss . L.pack . show
-        (l1, l2) = (A.TailLabel $ rlab $ card1 r, A.HeadLabel $ rlab $ card2 r)
-        label    = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
-    edge (entity1 r) (entity2 r) [label, l1, l2]
+  forM_ (rels er) $ relToEdge (fromConfigOrDefault notation)
     where
       fromConfigOrDefault :: (Config -> Maybe a) -> a
       fromConfigOrDefault opt = fromJust $ opt conf <|> opt defaultConfig
@@ -70,6 +65,25 @@ dotER conf er = graph' $ do
       entityFmt
         | fromConfigOrDefault dotentity = toLabel . dotEntity
         | otherwise = toLabel . htmlEntity
+      relToEdge n r = edge (entity1 r) (entity2 r) (label:eAttr n)
+        where
+          optss = roptions r
+          label = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
+          (c1,c2) = (card1 r, card2 r)
+          eAttr UML = [A.TailLabel $ card2label c1
+                      ,A.HeadLabel $ card2label c2
+                      ]
+            where
+              card2label = A.HtmlLabel . H.Text . htmlFont optss . L.pack . show
+          eAttr IE = [A.Dir Both
+                     ,A.ArrowTail $ card2arr c1
+                     ,A.ArrowHead $ card2arr c2
+                     ]
+            where
+              card2arr ZeroOne  = A.AType [(A.openMod, A.DotArrow), (A.noMods, A.Tee)]
+              card2arr One      = A.AType [(A.noMods, A.Tee), (A.noMods, A.Tee)]
+              card2arr ZeroPlus = A.AType [(A.noMods, A.Crow), (A.openMod, A.DotArrow)]
+              card2arr OnePlus  = A.AType [(A.noMods, A.Crow), (A.noMods, A.Tee)]
 
 -- | Converts a single entity to an HTML label.
 htmlEntity :: Entity -> H.Label
