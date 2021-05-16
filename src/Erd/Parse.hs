@@ -6,23 +6,33 @@ where
 
 import           Erd.ER
 
-import           Control.Monad          (when)
+import           Control.Exception      (bracket_)
+import           Control.Monad          (when,unless)
 import           Data.List              (find)
 import           Data.Maybe
 import           Data.Text.Lazy         hiding (find, map, reverse)
 import           Data.Text.Lazy.IO
-import           System.IO              (Handle)
+import           System.IO              (Handle,hIsTerminalDevice,hSetEncoding,
+                                         hGetEncoding,utf8)
 import           Text.Parsec
 import           Text.Parsec.Erd.Parser (AST (..), GlobalOptions (..), document)
 import           Text.Printf            (printf)
 
 loadER :: String -> Handle -> IO (Either String ER)
 loadER fpath f = do
-  s <- hGetContents f
-  case parse (do { (opts, ast) <- document; return $ toER opts ast}) fpath s of
-    Left err           -> return $ Left $ show err
-    Right err@(Left _) -> return err
-    Right (Right er)   -> return $ Right er
+  Just initialEncoding <- hGetEncoding f
+  isTerminalDevice <- hIsTerminalDevice f
+  let setEncodingIfNeeded = unless isTerminalDevice . hSetEncoding f
+  bracket_
+    (setEncodingIfNeeded utf8)
+    (setEncodingIfNeeded initialEncoding)
+    (do
+      s <- hGetContents f
+      case parse (do { (opts, ast) <- document; return $ toER opts ast}) fpath s of
+        Left err           -> return $ Left $ show err
+        Right err@(Left _) -> return err
+        Right (Right er)   -> return $ Right er
+    )
 
 -- | Converts a list of syntactic categories in an entity-relationship
 -- description to an ER representation. If there was a problem with the
