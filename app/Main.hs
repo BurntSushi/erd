@@ -68,7 +68,12 @@ dotER conf er = graph' $ do
       relToEdge n r = edge (entity1 r) (entity2 r) (label:eAttr n)
         where
           optss = roptions r
-          label = A.Label $ A.HtmlLabel $ H.Text $ withLabelFmt " %s " optss []
+          labelOrXLabel =
+            case fromConfigOrDefault edgeType of
+              A.Ortho -> A.XLabel -- Graphivz recommends xlabels for ortho edges
+              _ -> A.Label
+          label =
+            labelOrXLabel . A.HtmlLabel . H.Text $ withLabelFmt " %s " optss []
           (c1,c2) = (card1 r, card2 r)
           eAttr UML = [A.TailLabel $ card2label c1
                       ,A.HeadLabel $ card2label c2
