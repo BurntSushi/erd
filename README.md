@@ -8,10 +8,10 @@ are limited options for specifying color and font information. Also, `erd` can
 output graphs in a variety of formats, including but not limited to: pdf, svg,
 eps, png, jpg, plain text and dot.
 
-Here's an example of the output produced by `erd` (click on it for a larger PDF
+Here's an example of the output produced by `erd` (click on it for a larger PNG 
 version):
 
-[![ER diagram for nfldb](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.png)](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.pdf)
+[![ER diagram for nfldb](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.png)](https://raw.githubusercontent.com/BurntSushi/erd/master/examples/nfldb.png)
 
 The [corresponding `er` file is in the `examples`
 directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
@@ -395,10 +395,7 @@ names](http://hackage.haskell.org/package/graphviz-2999.8.0.0/docs/Data-GraphViz
 * **bgcolor** Specifies the background color. Only valid for entities and
   attributes.
 * **size** Specifies the font size. Valid everywhere.
-* **font** Specifies the font. Valid everywhere. See
-  [this](http://www.graphviz.org/doc/fontfaq.txt) and
-  [this](http://www.graphviz.org/doc/info/attrs.html#d:fontname) for
-  information about fonts in GraphViz. TL;DR: Stick with one of the following:
+* **font** Specifies the font. Valid everywhere. See [this](http://www.graphviz.org/doc/info/attrs.html#d:fontname) for information about fonts in GraphViz. TL;DR: Stick with one of the following:
   `Times-Roman`, `Helvetica` or `Courier`.
 * **border-color** Border color. Only works for entities or attributes.
 * **border** Border size in pixels. Only works for entities and attributes.
