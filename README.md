@@ -33,7 +33,15 @@ All of these are available for Windows, Mac and Linux.
 port install erd
 ```
 
-#### Docker
+#### Docker 
+
+```
+docker run -i ghcr.io/burntsushi/erd:latest < examples/nfldb.er >| out.pdf
+```
+
+[All available tags](https://github.com/BurntSushi/erd/pkgs/container/erd).
+
+##### Local Docker build
 
 An example command to use _erd_ in a _docker_ container, once this repository is successfully cloned.
 ```
