@@ -1,6 +1,6 @@
 0.2.1.0 (2020-02-01)
 
-* Add -v command-line flag to show verions and git revision.
+* Add -v command-line flag to show versions and git revision.
 
 * Support of regular dot-tables to visualize entities. (PR #74)
 
@@ -10,7 +10,7 @@
 
 * Updating code to be compliant with ghc-8.6.
 
-* Resolving compiler warnings that were muted by erlier setup.
+* Resolving compiler warnings that were muted by earlier setup.
 
 * Adding optional '-c/--config' switch to use _~/.erd.yaml_ as configuration file (PR #68)
 
