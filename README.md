@@ -18,10 +18,10 @@ directory](https://github.com/BurntSushi/erd/blob/master/examples/nfldb.er).
 
 ### Installation
 
-`erd` requires [GraphViz](http://www.graphviz.org/download/), and one of:
+`erd` requires [GraphViz](https://www.graphviz.org/download/), and one of:
 
 * [Stack](http://docs.haskellstack.org/en/stable/README/)
-* [Haskell Platform](http://www.haskell.org/platform/)
+* [Haskell toolchain](https://www.haskell.org/downloads/)
 
 All of these are available for Windows, Mac and Linux.
 
@@ -78,7 +78,7 @@ brew install graphviz
 
 [The issue 1636](https://gitlab.com/graphviz/graphviz/issues/1636) explains what needs to be performed in details to find out whether _pango_ support is enabled and how to make it happen in case it wasn't.
 
-[erd is on hackage](http://hackage.haskell.org/package/erd), so you can install 
+[erd is on hackage](https://hackage.haskell.org/package/erd), so you can install 
 it with cabal (which is included with the Haskell platform):
 
     cabal new-install erd
@@ -393,7 +393,7 @@ cannot have a background color (it will just be ignored by GraphViz).
 
 Colors can be specified in hexadecimal notation prefixed with a `#`, e.g.,
 `#3366ff` or they may be [written as their English
-names](http://hackage.haskell.org/package/graphviz-2999.8.0.0/docs/Data-GraphViz-Attributes-Colors.html#t:X11Color).
+names](https://hackage.haskell.org/package/graphviz-2999.20.1.0/docs/Data-GraphViz-Attributes-Colors-X11.html#t:X11Color).
 
 * **label** A plain text string used to label the item. For entity names and
   attributes, a label is shown next to the name in square brackets. For
@@ -403,7 +403,7 @@ names](http://hackage.haskell.org/package/graphviz-2999.8.0.0/docs/Data-GraphViz
 * **bgcolor** Specifies the background color. Only valid for entities and
   attributes.
 * **size** Specifies the font size. Valid everywhere.
-* **font** Specifies the font. Valid everywhere. See [this](http://www.graphviz.org/doc/info/attrs.html#d:fontname) for information about fonts in GraphViz. TL;DR: Stick with one of the following:
+* **font** Specifies the font. Valid everywhere. See [this](https://www.graphviz.org/doc/info/attrs.html#d:fontname) for information about fonts in GraphViz. TL;DR: Stick with one of the following:
   `Times-Roman`, `Helvetica` or `Courier`.
 * **border-color** Border color. Only works for entities or attributes.
 * **border** Border size in pixels. Only works for entities and attributes.
@@ -412,7 +412,7 @@ Formatting options are always specified as key-value pairs in curly braces,
 where the opening curly brace starts on the same line as the
 entity/attribute/relationship/directive. The option name precedes a colon and
 the option value comes after the colon in double quotes (even for integer
-values). The value is then proceded by either a comma or an ending curly brace.
+values). The value is then preceded by either a comma or an ending curly brace.
 Also note that trailing commas are allowed and that options may be specified
 over more than one line. For example, the following is a valid `er` file:
 
@@ -475,7 +475,7 @@ the listed projects are no longer maintained):
   * [text_to_diagram](https://github.com/japgolly/text_to_diagram)
 * Rust
   * [erd-rs](https://github.com/davechallis/erd-rs)
-* Propertiary, web-based tools:
+* Proprietary, web-based tools:
   * [dbdiagram.io](https://dbdiagram.io/d)
   * [quickdatabasediagrams.com](https://app.quickdatabasediagrams.com/#/)
 
