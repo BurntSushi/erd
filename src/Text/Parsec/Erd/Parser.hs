@@ -17,7 +17,7 @@ import           Control.Monad         (liftM2, void, when)
 import           Data.Char             (isAlphaNum, isControl, isSpace)
 import qualified Data.Map              as M
 import           Data.Maybe
-import           Data.Text.Lazy
+import           Data.Text.Lazy        hiding (elem)
 import           Text.Parsec
 import           Text.Parsec.Text.Lazy
 import           Text.Printf           (printf)
