@@ -34,19 +34,28 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push by digest
+      - name: Build and export the image to Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:test
+      - name: Test the image
+        run: |
+          docker run --rm ${{ env.IMAGE_NAME }}:test < examples/nfldb.er >| out.pdf
+      - name: Push the image by digest
         id: build
         uses: docker/build-push-action@v5
         with:
           context: .
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-      - name: Export digest
+      - name: Export the digest
         run: |
           mkdir -p /tmp/digests
           digest="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${digest#sha256:}"
-      - name: Upload digest
+      - name: Upload the digest
         uses: actions/upload-artifact@v3
         with:
           name: digests
