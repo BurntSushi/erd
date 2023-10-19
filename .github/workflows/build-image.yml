@@ -42,7 +42,7 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}:test
       - name: Test the image
         run: |
-          docker run --rm ${{ env.IMAGE_NAME }}:test < examples/nfldb.er >| nfldb.png
+          docker run --rm -i ${{ env.IMAGE_NAME }}:test < examples/nfldb.er >| nfldb.pdf
       - name: Push the image by digest
         id: build
         uses: docker/build-push-action@v5
@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: example-diagram-nfldb
-          path: nfldb.png
+          path: nfldb.pdf
 
   merge-image:
     runs-on: ubuntu-latest
