@@ -1,3 +1,17 @@
+0.2.2.0 (2022-11-??)
+
+* Bump stack lts version to 18.28
+
+* [Fix] Character encoding issue (PR #99, #102)
+
+* [Add]  IE (crow's foot) notation for cardinalities of relations. (PR #92, #33, #100)
+
+* [Add]  customizable edge pattern (PR #93, #95)
+
+* [Add] -v command-line flag to show version and git revision code. (PR #77)
+
+* [Add] Support of regular dot tables as output (PR #74)
+
 0.2.1.0 (2020-02-01)
 
 * Add -v command-line flag to show versions and git revision.
